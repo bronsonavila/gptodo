@@ -24,6 +24,7 @@ import { useState } from 'react'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+
 const MAX_FILE_SIZE = 6 * 1024 * 1024 // 6MB
 
 const VisuallyHiddenInput = styled('input')({
@@ -44,22 +45,6 @@ const App = () => {
   const { isLoading, error: processingError, todos, processImage, setTodos } = useImageProcessing()
 
   const handleError = (message: string) => setError({ show: true, message })
-
-  const validateFile = (file: File): boolean => {
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      handleError('Please upload a valid image file (JPEG, PNG, or WebP)')
-
-      return false
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      handleError('File size should be less than 6MB')
-
-      return false
-    }
-
-    return true
-  }
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -99,6 +84,22 @@ const App = () => {
 
       return newTodos
     })
+  }
+
+  const validateFile = (file: File): boolean => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      handleError('Please upload a valid image file (JPEG, PNG, or WebP)')
+
+      return false
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      handleError('File size should be less than 6MB')
+
+      return false
+    }
+
+    return true
   }
 
   return (
