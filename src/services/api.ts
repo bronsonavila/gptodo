@@ -1,0 +1,26 @@
+import { TodoItem } from '../types'
+
+export class APIError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = 'APIError'
+  }
+}
+
+export const processTodoImage = async (base64Image: string): Promise<TodoItem[]> => {
+  const response = await fetch(
+    `https://${import.meta.env.PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/process-image`,
+    {
+      body: JSON.stringify({ base64Image }),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`
+      },
+      method: 'POST'
+    }
+  )
+
+  if (!response.ok) throw new APIError('Failed to process image')
+
+  return response.json()
+}

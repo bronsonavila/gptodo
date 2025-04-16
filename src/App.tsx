@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -11,77 +12,75 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Snackbar,
   ThemeProvider,
   Typography
 } from '@mui/material'
 import { darkTheme } from './theme'
+import { ErrorState } from './types'
+import { useImageProcessing } from './hooks/useImageProcessing'
 import { useState, useRef } from 'react'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
-interface TextItem {
-  text: string
-  completed: boolean
-}
+const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
+const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
 const App = () => {
-  const [isLoading, setIsLoading] = useState(false)
-  const [response, setResponse] = useState<TextItem[]>([])
+  const [error, setError] = useState<ErrorState>({ show: false, message: '' })
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const { isLoading, error: processingError, todos, processImage } = useImageProcessing()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const handleError = (message: string) => setError({ show: true, message })
+
+  const validateFile = (file: File): boolean => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      handleError('Please upload a valid image file (JPEG, PNG, or WebP)')
+
+      return false
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      handleError('File size should be less than 5MB')
+
+      return false
+    }
+
+    return true
+  }
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
-    if (file) {
-      const reader = new FileReader()
+    if (!file || !validateFile(file)) return
 
-      reader.onload = async event => {
-        const imageData = event.target?.result as string
+    const reader = new FileReader()
 
-        setSelectedImage(imageData)
-        setResponse([])
+    reader.onload = async event => {
+      const imageData = event.target?.result as string
 
-        try {
-          setIsLoading(true)
+      setSelectedImage(imageData)
 
-          const base64Image = imageData.split(',')[1]
+      try {
+        const base64Image = imageData.split(',')[1]
 
-          if (!base64Image) throw new Error('Failed to process the image')
+        if (!base64Image) throw new Error('Failed to process the image')
 
-          const response = await fetch(
-            `https://${import.meta.env.PUBLIC_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/process-image`,
-            {
-              body: JSON.stringify({ base64Image }),
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`
-              },
-              method: 'POST'
-            }
-          )
+        await processImage(base64Image)
+      } catch (error) {
+        console.error('Error:', error)
 
-          if (!response.ok) throw new Error('Failed to process image')
-
-          const data = await response.json()
-
-          setResponse(data)
-        } catch (error) {
-          console.error('Error:', error)
-
-          setResponse([{ text: 'Error occurred while processing the image', completed: false }])
-        } finally {
-          setIsLoading(false)
-        }
+        handleError('Failed to process the image. Please try again.')
       }
-
-      reader.readAsDataURL(file)
     }
+
+    reader.onerror = () => handleError('Error reading the file. Please try again.')
+
+    reader.readAsDataURL(file)
   }
 
-  const handleToggle = (index: number) => {
-    setResponse(previous => previous.map((item, i) => (i === index ? { ...item, completed: !item.completed } : item)))
-  }
+  const handleToggle = (index: number) => (todos[index].completed = !todos[index].completed)
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -94,7 +93,8 @@ const App = () => {
 
         <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
           <input
-            accept="image/*"
+            accept={ALLOWED_FILE_TYPES.join(',')}
+            aria-label="Upload image"
             onChange={handleImageUpload}
             ref={fileInputRef}
             style={{ display: 'none' }}
@@ -102,21 +102,22 @@ const App = () => {
           />
 
           <Button
+            aria-busy={isLoading}
+            disabled={isLoading}
             onClick={() => fileInputRef.current?.click()}
             size="small"
             startIcon={
               isLoading ? <CircularProgress size={16} color="inherit" /> : <CloudUploadIcon fontSize="small" />
             }
-            variant="contained"
-            disabled={isLoading}
             sx={{ minWidth: 200 }}
+            variant="contained"
           >
             {isLoading ? 'Processing...' : 'Upload Image'}
           </Button>
 
           {selectedImage && !isLoading && (
             <Box
-              alt="Uploaded"
+              alt="Uploaded todo list"
               component="img"
               src={selectedImage}
               sx={{
@@ -130,30 +131,35 @@ const App = () => {
           )}
         </Box>
 
-        {response.length > 0 && (
-          <Paper elevation={2} sx={{ p: 1 }}>
+        {todos.length > 0 && (
+          <Paper elevation={2} sx={{ p: 1 }} role="region" aria-label="Todo list">
             <List dense sx={{ py: 0 }}>
-              {response.map((item, index) => (
+              {todos.map((item, index) => (
                 <ListItem
                   disablePadding
                   key={index}
                   sx={{
+                    opacity: item.completed ? 0.7 : 1,
                     py: 0.25,
-                    textDecoration: item.completed ? 'line-through' : 'none',
-                    opacity: item.completed ? 0.7 : 1
+                    textDecoration: item.completed ? 'line-through' : 'none'
                   }}
                 >
-                  <ListItemButton onClick={() => handleToggle(index)} sx={{ py: 0.25 }}>
+                  <ListItemButton
+                    aria-checked={item.completed}
+                    onClick={() => handleToggle(index)}
+                    role="checkbox"
+                    sx={{ py: 0.25 }}
+                  >
                     <ListItemIcon sx={{ minWidth: 32 }}>
                       <Checkbox edge="start" checked={item.completed} tabIndex={-1} disableRipple size="small" />
                     </ListItemIcon>
 
                     <ListItemText
-                      primary={item.text}
-                      primaryTypographyProps={{
-                        variant: 'body2',
-                        sx: { fontSize: '0.875rem' }
-                      }}
+                      primary={
+                        <Typography variant="body2" sx={{ fontSize: '0.875rem' }}>
+                          {item.text}
+                        </Typography>
+                      }
                     />
                   </ListItemButton>
                 </ListItem>
@@ -161,6 +167,17 @@ const App = () => {
             </List>
           </Paper>
         )}
+
+        <Snackbar
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+          autoHideDuration={6000}
+          onClose={() => setError({ show: false, message: '' })}
+          open={error.show || !!processingError}
+        >
+          <Alert onClose={() => setError({ show: false, message: '' })} severity="error" sx={{ width: '100%' }}>
+            {error.message || processingError}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   )
