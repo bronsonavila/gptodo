@@ -51,6 +51,7 @@ const CONFIG = {
    - Part of the background or decorative elements (including bullet points, checkboxes, and other formatting symbols)
 5. Clean up the text by:
    - Removing extra whitespace
+   - Fixing obvious typos
    - Removing any list markers (bullet points, numbers, etc.)
 6. If no list items are found, return an empty array`
 }
