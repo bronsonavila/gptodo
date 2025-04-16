@@ -88,7 +88,7 @@ const App = () => {
 
       <Container
         maxWidth="md"
-        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100vh', px: 2, py: 2.5 }}
+        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100dvh', px: 2, py: 2.5 }}
       >
         <ImageUpload isLoading={isLoading} selectedImage={selectedImage} onImageUpload={handleImageUpload} />
 
