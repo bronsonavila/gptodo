@@ -103,6 +103,7 @@ const App = () => {
           <input
             accept={ALLOWED_FILE_TYPES.join(',')}
             aria-label="Upload image"
+            capture="environment"
             onChange={handleImageUpload}
             ref={fileInputRef}
             style={{ display: 'none' }}
