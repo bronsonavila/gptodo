@@ -35,7 +35,20 @@ serve(async req => {
 
     const { response } = await model.generateContent([
       { inlineData: { data: base64Image, mimeType: 'image/jpeg' } },
-      'Extract all the text from this image and return it as a JSON array of strings. Each string should be a separate line of text from the image. Only include text that is clearly visible and readable.'
+      `Extract all text from this image following these guidelines:
+1. Each line of text should be a separate item in the JSON array
+2. Preserve the original line breaks and order of the text
+3. Only include text that is clearly legible and complete
+4. Ignore any text that is:
+   - Partially obscured
+   - Too blurry to read
+   - Written in a different language
+   - Part of the background or decorative elements
+5. Clean up the text by:
+   - Removing extra whitespace
+   - Fixing obvious typos
+   - Standardizing bullet points or checkboxes to a consistent format
+6. If the text appears to be a list, maintain the list structure in the output`
     ])
 
     const jsonResponse = JSON.parse(response.text())
