@@ -17,7 +17,7 @@ import {
   Typography
 } from '@mui/material'
 import { darkTheme } from './theme'
-import { ErrorState } from './types'
+import { ErrorState, TodoItem } from './types'
 import { useImageProcessing } from './hooks/useImageProcessing'
 import { useState, useRef } from 'react'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
@@ -28,7 +28,7 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
-  const { isLoading, error: processingError, todos, processImage } = useImageProcessing()
+  const { isLoading, error: processingError, todos, processImage, setTodos } = useImageProcessing()
 
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -80,7 +80,15 @@ const App = () => {
     reader.readAsDataURL(file)
   }
 
-  const handleToggle = (index: number) => (todos[index].completed = !todos[index].completed)
+  const handleToggle = (index: number) => {
+    setTodos((prevTodos: TodoItem[]) => {
+      const newTodos = [...prevTodos]
+
+      newTodos[index] = { ...newTodos[index], completed: !newTodos[index].completed }
+
+      return newTodos
+    })
+  }
 
   return (
     <ThemeProvider theme={darkTheme}>

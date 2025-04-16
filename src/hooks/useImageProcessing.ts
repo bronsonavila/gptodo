@@ -22,5 +22,5 @@ export const useImageProcessing = () => {
     }
   }
 
-  return { isLoading, error, todos, processImage }
+  return { isLoading, error, todos, processImage, setTodos }
 }
