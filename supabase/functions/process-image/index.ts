@@ -41,7 +41,6 @@ const CONFIG = {
 4. Ignore any text that is:
    - Partially obscured
    - Too blurry to read
-   - Written in a different language
    - Part of the background or decorative elements (including bullet points, checkboxes, and other formatting symbols)
 5. Clean up the text by:
    - Removing extra whitespace
