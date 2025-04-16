@@ -43,12 +43,11 @@ serve(async req => {
    - Partially obscured
    - Too blurry to read
    - Written in a different language
-   - Part of the background or decorative elements
+   - Part of the background or decorative elements (including bullet points, checkboxes, and other formatting symbols)
 5. Clean up the text by:
    - Removing extra whitespace
    - Fixing obvious typos
-   - Standardizing bullet points or checkboxes to a consistent format
-6. If the text appears to be a list, maintain the list structure in the output`
+6. If the text appears to be a list, maintain the list structure in the output, but remove any bullet points`
     ])
 
     const jsonResponse = JSON.parse(response.text())
