@@ -16,6 +16,14 @@ interface TodoItem {
   completed: boolean
 }
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'https://gptodo.app',
+  'https://gptodo.netlify.app',
+  'https://localhost:3000',
+  'https://www.gptodo.app'
+]
+
 const CONFIG = {
   ai: {
     model: 'gemini-2.5-pro-preview-03-25',
@@ -24,32 +32,39 @@ const CONFIG = {
       items: {
         type: SchemaType.OBJECT,
         properties: {
-          text: { type: SchemaType.STRING, description: 'A line of text extracted from the image' }
+          text: { type: SchemaType.STRING, description: 'A section of text extracted from the image' }
         },
         required: ['text']
       }
     }
   },
-  cors: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type'
-  },
-  prompt: `Extract all text from this image following these guidelines:
-1. Each line of text should be a separate item in the JSON array
-2. Preserve the original line breaks and order of the text
-3. Only include text that is clearly legible and complete
+  prompt: `Extract only list-formatted text from this image following these guidelines:
+1. Each list item should be a separate item in the JSON array
+2. Preserve the original order of the list items
+3. Only include text that is:
+   - Clearly part of a list or checklist
+   - Clearly legible and complete
 4. Ignore any text that is:
+   - Not part of a list structure
    - Partially obscured
    - Too blurry to read
    - Part of the background or decorative elements (including bullet points, checkboxes, and other formatting symbols)
 5. Clean up the text by:
    - Removing extra whitespace
-   - Fixing obvious typos
-6. If the text appears to be a list, maintain the list structure in the output, but remove any bullet points`
+   - Removing any list markers (bullet points, numbers, etc.)
+6. If no list items are found, return an empty array`
 }
 
 serve(async (req: Request): Promise<Response> => {
-  if (req.method === 'OPTIONS') return new Response('ok', { headers: CONFIG.cors })
+  const origin = req.headers.get('origin')
+  const isAllowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
+
+  const corsHeaders = {
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Origin': isAllowedOrigin ? origin : ALLOWED_ORIGINS[0]
+  }
+
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
 
   try {
     const { base64Image } = (await req.json()) as ImageProcessingRequest
@@ -74,14 +89,14 @@ serve(async (req: Request): Promise<Response> => {
     const transformedResponse: TodoItem[] = jsonResponse.map(item => ({ text: item.text, completed: false }))
 
     return new Response(JSON.stringify(transformedResponse), {
-      headers: { ...CONFIG.cors, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   } catch (error) {
     const errorResponse: ErrorResponse = { error: error.message }
 
     return new Response(JSON.stringify(errorResponse), {
       status: 400,
-      headers: { ...CONFIG.cors, 'Content-Type': 'application/json' }
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     })
   }
 })
