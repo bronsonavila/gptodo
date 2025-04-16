@@ -1,8 +1,8 @@
 # GPTodo
 
-GPTodo uses Google's Gemini AI to convert photos of handwritten or typed todo lists into interactive digital checklists.
+GPTodo uses AI to convert photos of handwritten or typed todo lists into interactive digital checklists.
 
-[Live Demo](https://gptodo.netlify.app)
+[Live Demo (WIP)](https://gptodo.app)
 
 ### The Problem
 
