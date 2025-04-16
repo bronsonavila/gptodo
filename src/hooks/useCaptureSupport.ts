@@ -15,7 +15,7 @@ export const useCaptureSupport = (): boolean => {
   const [supportsCaptureAttribute, setSupportsCaptureAttribute] = useState(false)
 
   useEffect(() => {
-    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
     if (!isMobileDevice) {
       setSupportsCaptureAttribute(false)
