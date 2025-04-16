@@ -1,29 +1,13 @@
-# Rsbuild project
+# GPTodo
 
-## Setup
+GPTodo is an AI-powered todo list application that uses Google's Gemini AI to extract tasks from images. Users can upload a photo of their handwritten or typed todo list, and the application automatically converts it into digital, interactive todo items.
 
-Install the dependencies:
+[Live Demo](https://gptodo.netlify.app)
 
-```bash
-pnpm install
-```
+## Technical Overview
 
-## Get started
-
-Start the dev server:
-
-```bash
-pnpm dev
-```
-
-Build the app for production:
-
-```bash
-pnpm build
-```
-
-Preview the production build locally:
-
-```bash
-pnpm preview
-```
+- Frontend: React with TypeScript
+- Build System: Rsbuild
+- Backend: Supabase Edge Functions running on Deno runtime
+- AI Integration: Google Gemini AI for image processing and text extraction
+- Deployment: Netlify
