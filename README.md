@@ -19,5 +19,6 @@ GPTodo converts my shopping list photo into an interactive checklist. I take a p
 - Frontend: React with TypeScript
 - Build System: Rsbuild
 - Backend: Supabase Edge Functions running on Deno runtime
+  - `process-image`: Uses Google Gemini AI to extract text from images
 - AI Integration: Google Gemini AI for image processing and text extraction
 - Deployment: Netlify
