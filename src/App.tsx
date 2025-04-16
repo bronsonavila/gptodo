@@ -14,23 +14,34 @@ import {
   Paper,
   Snackbar,
   ThemeProvider,
-  Typography
+  Typography,
+  styled
 } from '@mui/material'
 import { darkTheme } from './theme'
 import { ErrorState, TodoItem } from './types'
 import { useImageProcessing } from './hooks/useImageProcessing'
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 const MAX_FILE_SIZE = 6 * 1024 * 1024 // 6MB
 
+const VisuallyHiddenInput = styled('input')({
+  bottom: 0,
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  whiteSpace: 'nowrap',
+  width: 1
+})
+
 const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
   const { isLoading, error: processingError, todos, processImage, setTodos } = useImageProcessing()
-
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleError = (message: string) => setError({ show: true, message })
 
@@ -100,28 +111,25 @@ const App = () => {
         </Typography>
 
         <Box sx={{ mb: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-          <input
-            accept={ALLOWED_FILE_TYPES.join(',')}
-            aria-label="Upload image"
-            capture="environment"
-            onChange={handleImageUpload}
-            ref={fileInputRef}
-            style={{ display: 'none' }}
-            type="file"
-          />
-
           <Button
-            aria-busy={isLoading}
+            component="label"
             disabled={isLoading}
-            onClick={() => fileInputRef.current?.click()}
-            size="small"
+            role={undefined}
             startIcon={
               isLoading ? <CircularProgress size={16} color="inherit" /> : <CloudUploadIcon fontSize="small" />
             }
             sx={{ minWidth: 200 }}
+            tabIndex={-1}
             variant="contained"
           >
             {isLoading ? 'Processing...' : 'Upload Image'}
+
+            <VisuallyHiddenInput
+              accept={ALLOWED_FILE_TYPES.join(',')}
+              capture="environment"
+              onChange={handleImageUpload}
+              type="file"
+            />
           </Button>
 
           {selectedImage && !isLoading && (
