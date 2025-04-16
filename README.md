@@ -1,10 +1,20 @@
 # GPTodo
 
-GPTodo is an AI-powered todo list application that uses Google's Gemini AI to extract tasks from images. Users can upload a photo of their handwritten or typed todo list, and the application automatically converts it into digital, interactive todo items.
+GPTodo uses Google's Gemini AI to convert photos of handwritten or typed todo lists into interactive digital checklists.
 
 [Live Demo](https://gptodo.netlify.app)
 
-## Technical Overview
+### The Problem
+
+I have a dry erase board on my refrigerator where I write down groceries to buy. When I go shopping, I take a photo of the board, but I can't mark items off in the photo. This makes it hard to track what I've already picked up.
+
+### The Solution
+
+GPTodo converts my shopping list photo into an interactive checklist. I take a picture of my whiteboard, upload it, and check off items as I shop.
+
+---
+
+### Technical Overview
 
 - Frontend: React with TypeScript
 - Build System: Rsbuild
