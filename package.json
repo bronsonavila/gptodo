@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rsbuild build",
     "dev": "rsbuild dev --open",
-    "preview": "rsbuild preview"
+    "preview": "rsbuild preview",
+    "deploy:function": "supabase functions deploy process-image"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
