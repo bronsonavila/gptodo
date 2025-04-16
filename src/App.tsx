@@ -51,6 +51,8 @@ const App = () => {
 
     if (!file || !validateFile(file)) return
 
+    setTodos([])
+
     const reader = new FileReader()
 
     reader.onload = async event => {
