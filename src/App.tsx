@@ -23,7 +23,7 @@ import { useState, useRef } from 'react'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
-const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
+const MAX_FILE_SIZE = 6 * 1024 * 1024 // 6MB
 
 const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
@@ -42,7 +42,7 @@ const App = () => {
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      handleError('File size should be less than 5MB')
+      handleError('File size should be less than 6MB')
 
       return false
     }
