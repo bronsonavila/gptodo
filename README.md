@@ -6,6 +6,8 @@ GPTodo uses AI to convert photos of handwritten or typed to-do lists into intera
 
 [Live Demo](https://gptodo.app)
 
+> 💡 Each conversion costs some fraction of a cent – please be gentle.
+
 ---
 
 ### The Problem
