@@ -12,6 +12,14 @@ export const darkTheme = createTheme({
     background: {
       default: '#121212',
       paper: '#1e1e1e'
+    },
+    action: {
+      disabled: 'rgba(255, 255, 255, 0.3)',
+      disabledBackground: 'rgba(255, 255, 255, 0.12)'
+    },
+    grey: {
+      500: 'rgba(255, 255, 255, 0.5)',
+      600: 'rgba(255, 255, 255, 0.3)'
     }
   },
   typography: {
@@ -36,6 +44,13 @@ export const darkTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundImage: 'none'
+        }
+      }
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          color: 'rgba(255, 255, 255, 0.4)'
         }
       }
     }

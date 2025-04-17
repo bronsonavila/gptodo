@@ -69,7 +69,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
   }
 
   return (
-    <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2.5, width: '100%' }}>
+    <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
         {isLoading ? (
           <CircularProgress size={44} thickness={4} />

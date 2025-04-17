@@ -3,6 +3,7 @@ import { Container, CssBaseline, ThemeProvider } from '@mui/material'
 import { darkTheme } from './theme'
 import { ErrorNotification } from './components/ErrorNotification'
 import { ErrorState } from './types'
+import { Footer } from './components/Footer'
 import { ImageUpload } from './components/ImageUpload'
 import { TodoList } from './components/TodoList'
 import { useEffect, useState } from 'react'
@@ -89,7 +90,15 @@ const App = () => {
 
       <Container
         maxWidth="md"
-        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minHeight: '100dvh', px: 2, py: 2.5 }}
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          minHeight: '100dvh',
+          position: 'relative',
+          px: 2,
+          py: 2.5
+        }}
       >
         <ImageUpload
           isLoading={isLoading}
@@ -106,6 +115,8 @@ const App = () => {
           processingError={processingError}
           onClose={() => setError({ show: false, message: '' })}
         />
+
+        <Footer />
       </Container>
     </ThemeProvider>
   )
