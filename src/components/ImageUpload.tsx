@@ -39,6 +39,34 @@ const ClearButton = ({ onClick }: { onClick: () => void }) => (
   </Fab>
 )
 
+const UploadButton = ({ capture, icon, inputRef, label, onFileSelect }: UploadButtonProps) => (
+  <Fab component="label" role={undefined} sx={{ height: 'auto', minHeight: '44px' }} tabIndex={-1} variant="extended">
+    {icon}
+
+    {label}
+
+    <VisuallyHiddenInput
+      accept={ALLOWED_FILE_TYPES.join(',')}
+      capture={capture}
+      onChange={onFileSelect}
+      ref={inputRef}
+      type="file"
+    />
+  </Fab>
+)
+
+const VisuallyHiddenInput = styled('input')({
+  bottom: 0,
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  left: 0,
+  overflow: 'hidden',
+  position: 'absolute',
+  whiteSpace: 'nowrap',
+  width: 1
+})
+
 export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, selectedImage }: ImageUploadProps) => {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -113,31 +141,3 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
     </Box>
   )
 }
-
-const UploadButton = ({ capture, icon, inputRef, label, onFileSelect }: UploadButtonProps) => (
-  <Fab component="label" role={undefined} sx={{ height: 'auto', minHeight: '44px' }} tabIndex={-1} variant="extended">
-    {icon}
-
-    {label}
-
-    <VisuallyHiddenInput
-      accept={ALLOWED_FILE_TYPES.join(',')}
-      capture={capture}
-      onChange={onFileSelect}
-      ref={inputRef}
-      type="file"
-    />
-  </Fab>
-)
-
-const VisuallyHiddenInput = styled('input')({
-  bottom: 0,
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  left: 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  whiteSpace: 'nowrap',
-  width: 1
-})
