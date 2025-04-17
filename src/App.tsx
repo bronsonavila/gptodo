@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react'
 import { useImageProcessing } from './hooks/useImageProcessing'
 import { useTodoList } from './hooks/useTodoList'
 
-const App = () => {
+export const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -132,5 +132,3 @@ const App = () => {
     </ThemeProvider>
   )
 }
-
-export default App
