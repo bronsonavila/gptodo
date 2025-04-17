@@ -74,6 +74,7 @@ export const cacheService = {
     }
   },
 
+  // Handles cases where a user refreshes or leaves the page while the image is processing
   async hasMismatchedCacheState(): Promise<boolean> {
     try {
       const cachedImage = await this.getCachedImage()
