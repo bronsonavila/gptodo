@@ -12,11 +12,34 @@ import { useTodoList } from './hooks/useTodoList'
 
 export const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
+  const [hasCacheBeenChecked, setHasCacheBeenChecked] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
   const { todos, handleToggle, updateTodos, clearTodos } = useTodoList()
-  const { error: processingError, processImage, hasCachedImage } = useImageProcessing(updateTodos)
+  const { error: processingError, processImage } = useImageProcessing(updateTodos)
+
+  const checkCacheOnInitialRender = async () => {
+    try {
+      const hasMismatchedState = await cacheService.hasMismatchedCacheState()
+
+      if (hasMismatchedState) {
+        await cacheService.clearCachedImage()
+
+        setHasCacheBeenChecked(true)
+
+        return
+      }
+
+      const cachedImage = await cacheService.getCachedImage()
+
+      if (cachedImage) setSelectedImage(cachedImage)
+    } catch (err) {
+      console.error('Error checking cache:', err)
+    } finally {
+      setHasCacheBeenChecked(true)
+    }
+  }
 
   const handleClear = async () => {
     try {
@@ -70,63 +93,47 @@ export const App = () => {
     reader.readAsDataURL(file)
   }
 
-  // Load cached image on initial render
   useEffect(() => {
-    if (!hasCachedImage) return
-    ;(async () => {
-      try {
-        const hasMismatchedState = await cacheService.hasMismatchedCacheState()
-
-        if (hasMismatchedState) {
-          await cacheService.clearCachedImages()
-
-          return
-        }
-
-        const cachedImage = await cacheService.getCachedImage()
-
-        if (cachedImage) setSelectedImage(cachedImage)
-      } catch (err) {
-        console.error('Error loading cached image:', err)
-      }
-    })()
-  }, [hasCachedImage])
+    checkCacheOnInitialRender()
+  }, [])
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
 
-      <Box sx={{ minHeight: '100dvh', position: 'relative', width: '100%' }}>
-        <Container
-          maxWidth="md"
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            minHeight: '100dvh',
-            px: 2,
-            py: 2.5
-          }}
-        >
-          <ImageUpload
-            isLoading={isLoading}
-            onClear={handleClear}
-            onError={handleError}
-            onImageSelect={processSelectedFile}
-            selectedImage={selectedImage}
-          />
+      {hasCacheBeenChecked && (
+        <Box sx={{ minHeight: '100dvh', position: 'relative', width: '100%' }}>
+          <Container
+            maxWidth="md"
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              minHeight: '100dvh',
+              px: 2,
+              py: 2.5
+            }}
+          >
+            <ImageUpload
+              isLoading={isLoading}
+              onClear={handleClear}
+              onError={handleError}
+              onImageSelect={processSelectedFile}
+              selectedImage={selectedImage}
+            />
 
-          {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
+            {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
 
-          <ErrorNotification
-            error={error}
-            processingError={processingError}
-            onClose={() => setError({ show: false, message: '' })}
-          />
-        </Container>
+            <ErrorNotification
+              error={error}
+              processingError={processingError}
+              onClose={() => setError({ show: false, message: '' })}
+            />
+          </Container>
 
-        <Footer />
-      </Box>
+          <Footer />
+        </Box>
+      )}
     </ThemeProvider>
   )
 }

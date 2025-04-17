@@ -11,7 +11,7 @@ export const cacheService = {
   async cacheImage(imageData: string): Promise<void> {
     const cache = await this.initCache()
 
-    await this.clearCachedImages()
+    await this.clearCachedImage()
 
     await cache.delete(TODO_LIST_KEY)
 
@@ -36,7 +36,7 @@ export const cacheService = {
     }
   },
 
-  async clearCachedImages(): Promise<void> {
+  async clearCachedImage(): Promise<void> {
     const cache = await this.initCache()
 
     await cache.delete(IMAGE_KEY)
