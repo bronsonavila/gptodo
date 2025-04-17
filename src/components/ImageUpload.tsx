@@ -102,7 +102,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
           alt="Uploaded todo list"
           component="img"
           src={selectedImage}
-          sx={{ borderRadius: 1, maxHeight: 'calc(50dvh)', maxWidth: '100%', mt: 0.5, objectFit: 'contain' }}
+          sx={{ borderRadius: 1, maxHeight: 'calc(50vh)', maxWidth: '100%', mt: 0.5, objectFit: 'contain' }}
         />
       )}
     </Box>
