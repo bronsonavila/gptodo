@@ -12,7 +12,6 @@ import { useTodoList } from './hooks/useTodoList'
 
 export const App = () => {
   const [error, setError] = useState<ErrorState>({ show: false, message: '' })
-  const [isInitialCacheCheckComplete, setIsInitialCacheCheckComplete] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
@@ -89,8 +88,6 @@ export const App = () => {
         if (cachedImage) setSelectedImage(cachedImage)
       } catch (err) {
         console.error('Error loading cached image:', err)
-      } finally {
-        setIsInitialCacheCheckComplete(true)
       }
     })()
   }, [hasCachedImage])
@@ -111,19 +108,15 @@ export const App = () => {
             py: 2.5
           }}
         >
-          {isInitialCacheCheckComplete && (
-            <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-              <ImageUpload
-                isLoading={isLoading}
-                onClear={handleClear}
-                onError={handleError}
-                onImageSelect={processSelectedFile}
-                selectedImage={selectedImage}
-              />
+          <ImageUpload
+            isLoading={isLoading}
+            onClear={handleClear}
+            onError={handleError}
+            onImageSelect={processSelectedFile}
+            selectedImage={selectedImage}
+          />
 
-              {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
-            </Box>
-          )}
+          {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
 
           <ErrorNotification
             error={error}
