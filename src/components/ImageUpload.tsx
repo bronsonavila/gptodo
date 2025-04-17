@@ -1,4 +1,4 @@
-import { Box, styled, Fab } from '@mui/material'
+import { Box, styled, Fab, Paper } from '@mui/material'
 import { Loader } from './Loader'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef } from 'react'
@@ -72,7 +72,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
   }
 
   return (
-    <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
+    <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
         {isLoading ? (
           <Loader />
@@ -101,12 +101,14 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
       </Box>
 
       {selectedImage && !isLoading && (
-        <Box
-          alt="Uploaded image"
-          component="img"
-          src={selectedImage}
-          sx={{ borderRadius: 1, maxHeight: 'calc(50vh)', maxWidth: '500px', mt: 0.5, objectFit: 'contain' }}
-        />
+        <Paper elevation={2} sx={{ borderRadius: 1, maxWidth: '500px', mt: 0.5, overflow: 'hidden', width: '100%' }}>
+          <Box
+            alt="Uploaded image"
+            component="img"
+            src={selectedImage}
+            sx={{ display: 'block', maxHeight: 'calc(50vh)', maxWidth: '100%', objectFit: 'contain', width: '100%' }}
+          />
+        </Paper>
       )}
     </Box>
   )

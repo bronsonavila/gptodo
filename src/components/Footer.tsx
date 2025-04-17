@@ -6,9 +6,8 @@ export const Footer = () => {
     <Box
       sx={{
         bottom: 16,
-        left: '50%',
+        right: 16,
         position: 'absolute',
-        transform: 'translateX(-50%)',
         zIndex: 1
       }}
     >

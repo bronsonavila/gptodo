@@ -1,5 +1,5 @@
 import { cacheService } from './services/cacheService'
-import { Container, CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material'
 import { darkTheme } from './theme'
 import { ErrorNotification } from './components/ErrorNotification'
 import { ErrorState } from './types'
@@ -88,36 +88,39 @@ const App = () => {
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
 
-      <Container
-        maxWidth="md"
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          minHeight: '100dvh',
-          position: 'relative',
-          px: 2,
-          py: 2.5
-        }}
-      >
-        <ImageUpload
-          isLoading={isLoading}
-          onClear={handleClear}
-          onError={handleError}
-          onImageSelect={processSelectedFile}
-          selectedImage={selectedImage}
-        />
+      <Box sx={{ minHeight: '100dvh', position: 'relative', width: '100%' }}>
+        <Container
+          maxWidth="md"
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            minHeight: '100dvh',
+            px: 2,
+            py: 2.5
+          }}
+        >
+          <ImageUpload
+            isLoading={isLoading}
+            onClear={handleClear}
+            onError={handleError}
+            onImageSelect={processSelectedFile}
+            selectedImage={selectedImage}
+          />
 
-        {!isLoading && selectedImage !== null && todos.length > 0 && <TodoList todos={todos} onToggle={handleToggle} />}
+          {!isLoading && selectedImage !== null && todos.length > 0 && (
+            <TodoList todos={todos} onToggle={handleToggle} />
+          )}
 
-        <ErrorNotification
-          error={error}
-          processingError={processingError}
-          onClose={() => setError({ show: false, message: '' })}
-        />
+          <ErrorNotification
+            error={error}
+            processingError={processingError}
+            onClose={() => setError({ show: false, message: '' })}
+          />
+        </Container>
 
         <Footer />
-      </Container>
+      </Box>
     </ThemeProvider>
   )
 }
