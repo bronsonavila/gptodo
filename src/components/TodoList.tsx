@@ -13,7 +13,7 @@ export const TodoList = ({ onToggle, todos }: TodoListProps) => {
         aria-label="Empty todo list"
         elevation={2}
         role="region"
-        sx={{ maxWidth: '360px', mb: 5, mt: 2.5, mx: 'auto', p: 3.5, textAlign: 'center' }}
+        sx={{ maxWidth: '360px', mb: 5, mx: 'auto', p: 3.5, textAlign: 'center' }}
       >
         <Typography color="text.secondary" variant="body1">
           No items found in your todo list.
@@ -31,7 +31,7 @@ export const TodoList = ({ onToggle, todos }: TodoListProps) => {
       aria-label="Todo list"
       elevation={2}
       role="region"
-      sx={{ maxWidth: '500px', mb: 5, mt: 2.5, mx: 'auto', p: 1.5, width: '100%' }}
+      sx={{ maxWidth: '500px', mb: 5, mx: 'auto', p: 1.5, width: '100%' }}
     >
       <List sx={{ width: '100%', py: 0 }}>
         {todos.map((item, index) => (
