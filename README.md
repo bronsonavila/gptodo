@@ -6,6 +6,8 @@ GPTodo uses AI to convert photos of handwritten or typed todo lists into digital
 
 [Live Demo](https://gptodo.app)
 
+---
+
 ### The Problem
 
 I have a dry erase board on my refrigerator where I write down groceries to buy. When I go shopping, I take a photo of the board, but I can't mark items off in the photo. This makes it hard to track what I've already picked up.
@@ -20,6 +22,6 @@ GPTodo converts my shopping list photo into a checklist. I take a picture of my 
 
 - Frontend: React with TypeScript
 - Build System: Rsbuild
-- Backend: Supabase Edge Functions running on Deno runtime
+- Backend: Supabase Edge Functions running on Deno
 - AI Integration: Google Gemini AI for image processing and text extraction
 - Deployment: Netlify
