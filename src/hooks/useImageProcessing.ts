@@ -1,26 +1,40 @@
-import { useState } from 'react'
+import { cacheService } from '../services/cacheService'
 import { processTodoImage } from '../services/api'
+import { useEffect, useState } from 'react'
 import type { TodoItem } from '../types'
 
-export const useImageProcessing = () => {
+export const useImageProcessing = (onProcessSuccess: (todos: TodoItem[]) => void) => {
   const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [todos, setTodos] = useState<TodoItem[]>([])
+  const [hasCachedImage, setHasCachedImage] = useState(false)
 
   const processImage = async (base64Image: string) => {
-    try {
-      setIsLoading(true)
-      setError(null)
+    setError(null)
 
+    try {
       const data = await processTodoImage(base64Image)
 
-      setTodos(data)
+      onProcessSuccess(data)
+
+      return data
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred')
-    } finally {
-      setIsLoading(false)
+
+      throw err
     }
   }
 
-  return { isLoading, error, todos, processImage, setTodos }
+  // Check if we have a cached image on initial render
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const cachedImage = await cacheService.getCachedImage()
+
+        if (cachedImage) setHasCachedImage(true)
+      } catch (err) {
+        console.error('Error checking cached image:', err)
+      }
+    })()
+  }, [])
+
+  return { error, hasCachedImage, processImage }
 }

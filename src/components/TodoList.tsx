@@ -13,7 +13,7 @@ export const TodoList = ({ onToggle, todos }: TodoListProps) => {
         aria-label="Empty todo list"
         elevation={2}
         role="region"
-        sx={{ maxWidth: '500px', mx: 'auto', textAlign: 'center', p: 3.5 }}
+        sx={{ maxWidth: '360px', mx: 'auto', p: 3.5, textAlign: 'center' }}
       >
         <Typography color="text.secondary" variant="body1">
           No items found in your todo list.

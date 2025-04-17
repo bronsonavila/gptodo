@@ -18,6 +18,20 @@ export const darkTheme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none'
+        }
+      }
+    },
+    MuiFab: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none'
+        }
+      }
+    },
     MuiPaper: {
       styleOverrides: {
         root: {

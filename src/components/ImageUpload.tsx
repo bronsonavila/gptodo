@@ -1,92 +1,116 @@
 import { Box, CircularProgress, styled, Fab } from '@mui/material'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef } from 'react'
+import ClearIcon from '@mui/icons-material/Clear'
+import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
+const MAX_FILE_SIZE = 6 * 1024 * 1024 // 6MB
+
 interface ImageUploadProps {
   isLoading: boolean
-  onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onClear: () => void
+  onError?: (message: string) => void
+  onImageSelect: (file: File) => Promise<void>
   selectedImage: string | null
 }
 
 interface UploadButtonProps {
   capture?: 'user' | 'environment'
-  color: 'primary' | 'secondary'
   icon: React.ReactNode
   inputRef: React.RefObject<HTMLInputElement | null>
   label: string
-  onImageUpload: (event: React.ChangeEvent<HTMLInputElement>) => void
+  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const ImageUpload = ({ isLoading, onImageUpload, selectedImage }: ImageUploadProps) => {
+const ClearButton = ({ onClick }: { onClick: () => void }) => (
+  <Fab
+    color="error"
+    onClick={onClick}
+    role={undefined}
+    sx={{ height: '44px', p: 0, minWidth: '44px' }}
+    tabIndex={0}
+    variant="extended"
+  >
+    <ClearIcon />
+  </Fab>
+)
+
+export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, selectedImage }: ImageUploadProps) => {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supportsCaptureAttribute = useCaptureSupport()
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onImageUpload(event)
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+
+    if (file && validateFile(file)) onImageSelect(file)
 
     // Reset the file input value to allow re-uploading the same file
     if (event.target) event.target.value = ''
   }
 
-  return (
-    <Box sx={{ mb: 2.5, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, width: '100%' }}>
-      {isLoading ? (
-        <CircularProgress size={52} thickness={4} />
-      ) : supportsCaptureAttribute ? (
-        <Box sx={{ display: 'flex', gap: 2.5, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <UploadButton
-            color="primary"
-            icon={<CloudUploadIcon sx={{ mr: 1 }} />}
-            inputRef={fileInputRef}
-            label="Upload"
-            onImageUpload={handleImageUpload}
-          />
+  const validateFile = (file: File): boolean => {
+    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+      onError?.('Please upload a valid image file (JPEG, PNG, or WebP)')
 
-          <UploadButton
-            capture="environment"
-            color="secondary"
-            icon={<PhotoCameraIcon sx={{ mr: 1 }} />}
-            inputRef={cameraInputRef}
-            label="Camera"
-            onImageUpload={handleImageUpload}
-          />
-        </Box>
-      ) : (
-        <UploadButton
-          color="primary"
-          icon={<CloudUploadIcon sx={{ mr: 1 }} />}
-          inputRef={fileInputRef}
-          label="Upload"
-          onImageUpload={handleImageUpload}
-        />
-      )}
+      return false
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      onError?.('File size should be less than 6MB')
+
+      return false
+    }
+
+    return true
+  }
+
+  return (
+    <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2.5, width: '100%' }}>
+      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
+        {isLoading ? (
+          <CircularProgress size={44} thickness={4} />
+        ) : (
+          <>
+            <UploadButton
+              icon={<CloudUploadIcon sx={{ mr: 1 }} />}
+              inputRef={fileInputRef}
+              label="Upload"
+              onFileSelect={handleFileSelect}
+            />
+
+            {supportsCaptureAttribute && (
+              <UploadButton
+                capture="environment"
+                icon={<PhotoCameraIcon sx={{ mr: 1 }} />}
+                inputRef={cameraInputRef}
+                label="Camera"
+                onFileSelect={handleFileSelect}
+              />
+            )}
+
+            {selectedImage && <ClearButton onClick={onClear} />}
+          </>
+        )}
+      </Box>
 
       {selectedImage && !isLoading && (
         <Box
           alt="Uploaded todo list"
           component="img"
           src={selectedImage}
-          sx={{ borderRadius: 1, boxShadow: 2, maxHeight: 220, maxWidth: '100%', mt: 0.5, objectFit: 'contain' }}
+          sx={{ borderRadius: 1, maxHeight: 'calc(50dvh)', maxWidth: '100%', mt: 0.5, objectFit: 'contain' }}
         />
       )}
     </Box>
   )
 }
 
-const UploadButton = ({ capture, color, icon, inputRef, label, onImageUpload }: UploadButtonProps) => (
-  <Fab
-    color={color}
-    component="label"
-    role={undefined}
-    sx={{ height: 'auto', minHeight: '44px', px: 2.5, py: 0.75 }}
-    tabIndex={-1}
-    variant="extended"
-  >
+const UploadButton = ({ capture, icon, inputRef, label, onFileSelect }: UploadButtonProps) => (
+  <Fab component="label" role={undefined} sx={{ height: 'auto', minHeight: '44px' }} tabIndex={-1} variant="extended">
     {icon}
 
     {label}
@@ -94,7 +118,7 @@ const UploadButton = ({ capture, color, icon, inputRef, label, onImageUpload }: 
     <VisuallyHiddenInput
       accept={ALLOWED_FILE_TYPES.join(',')}
       capture={capture}
-      onChange={onImageUpload}
+      onChange={onFileSelect}
       ref={inputRef}
       type="file"
     />
