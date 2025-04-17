@@ -74,6 +74,20 @@ export const cacheService = {
     }
   },
 
+  async hasMismatchedCacheState(): Promise<boolean> {
+    try {
+      const cachedImage = await this.getCachedImage()
+      const cachedTodos = await this.getCachedTodoList()
+
+      // Return true if we have an image but no todos
+      return cachedImage !== null && (!cachedTodos || cachedTodos.length === 0)
+    } catch (error) {
+      console.error('Error checking cache state:', error)
+
+      return false
+    }
+  },
+
   async initCache(): Promise<Cache> {
     return await caches.open(CACHE_NAME)
   }

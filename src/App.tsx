@@ -75,6 +75,14 @@ const App = () => {
     if (!hasCachedImage) return
     ;(async () => {
       try {
+        const hasMismatchedState = await cacheService.hasMismatchedCacheState()
+
+        if (hasMismatchedState) {
+          await cacheService.clearCachedImages()
+
+          return
+        }
+
         const cachedImage = await cacheService.getCachedImage()
 
         if (cachedImage) setSelectedImage(cachedImage)
