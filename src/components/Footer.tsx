@@ -3,14 +3,7 @@ import GitHubIcon from '@mui/icons-material/GitHub'
 
 export const Footer = () => {
   return (
-    <Box
-      sx={{
-        bottom: 16,
-        right: 16,
-        position: 'absolute',
-        zIndex: 1
-      }}
-    >
+    <Box sx={{ bottom: 16, position: 'absolute', right: 16, zIndex: 1 }}>
       <IconButton
         aria-label="GitHub repository"
         color="inherit"
