@@ -121,9 +121,7 @@ export const App = () => {
                 selectedImage={selectedImage}
               />
 
-              {!isLoading && selectedImage !== null && todos.length > 0 && (
-                <TodoList todos={todos} onToggle={handleToggle} />
-              )}
+              {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
             </Box>
           )}
 
