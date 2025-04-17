@@ -10,17 +10,17 @@ export const TodoList = ({ onToggle, todos }: TodoListProps) => {
   if (todos.length === 0) {
     return (
       <Paper
-        aria-label="Empty todo list"
+        aria-label="Empty to-do list"
         elevation={2}
         role="region"
         sx={{ maxWidth: '360px', mb: 5, mt: 2.5, mx: 'auto', p: 3.5, textAlign: 'center' }}
       >
         <Typography color="text.secondary" variant="body1">
-          No items found in your todo list.
+          No items found in your to-do list.
         </Typography>
 
         <Typography color="text.secondary" sx={{ mt: 1.5 }} variant="body2">
-          Try uploading a clearer image or make sure your todo list is visible in the picture.
+          Try uploading a clearer image or make sure your to-do list is visible in the picture.
         </Typography>
       </Paper>
     )
