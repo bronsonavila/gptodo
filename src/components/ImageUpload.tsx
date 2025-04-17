@@ -1,4 +1,5 @@
-import { Box, CircularProgress, styled, Fab } from '@mui/material'
+import { Box, styled, Fab } from '@mui/material'
+import { Loader } from './Loader'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef } from 'react'
 import ClearIcon from '@mui/icons-material/Clear'
@@ -46,7 +47,9 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
-    if (file && validateFile(file)) onImageSelect(file)
+    if (file && validateFile(file)) {
+      onImageSelect(file).catch(() => onError?.('An error occurred while processing the image.'))
+    }
 
     // Reset the file input value to allow re-uploading the same file
     if (event.target) event.target.value = ''
@@ -72,7 +75,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
     <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 1.5, width: '100%' }}>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
         {isLoading ? (
-          <CircularProgress size={44} thickness={4} />
+          <Loader />
         ) : (
           <>
             <UploadButton
@@ -99,10 +102,10 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
 
       {selectedImage && !isLoading && (
         <Box
-          alt="Uploaded todo list"
+          alt="Uploaded image"
           component="img"
           src={selectedImage}
-          sx={{ borderRadius: 1, maxHeight: 'calc(50vh)', maxWidth: '100%', mt: 0.5, objectFit: 'contain' }}
+          sx={{ borderRadius: 1, maxHeight: 'calc(50vh)', maxWidth: '500px', mt: 0.5, objectFit: 'contain' }}
         />
       )}
     </Box>
