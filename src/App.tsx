@@ -1,5 +1,5 @@
 import { cacheService } from './services/cacheService'
-import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material'
+import { Box, Container, CssBaseline, ThemeProvider, Typography } from '@mui/material'
 import { darkTheme } from './theme'
 import { ErrorNotification } from './components/ErrorNotification'
 import { ErrorState } from './types'
@@ -114,6 +114,12 @@ export const App = () => {
               py: 2.5
             }}
           >
+            {!isLoading && selectedImage === null && (
+              <Typography align="center" sx={{ mb: 2, opacity: 0.7 }}>
+                Provide a photo of your to-do list
+              </Typography>
+            )}
+
             <ImageUpload
               isLoading={isLoading}
               onClear={handleClear}
