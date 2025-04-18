@@ -8,7 +8,7 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
-const MAX_FILE_SIZE = 6 * 1024 * 1024 // 6MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
 interface ImageUploadProps {
   isLoading: boolean
@@ -91,7 +91,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
     }
 
     if (file.size > MAX_FILE_SIZE) {
-      onError?.('File size should be less than 6MB')
+      onError?.('File size should be less than 10MB')
 
       return false
     }
