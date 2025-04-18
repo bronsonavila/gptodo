@@ -1,12 +1,11 @@
-import { Box, styled, Fab, Paper, Typography } from '@mui/material'
+import { Box, Paper, Typography } from '@mui/material'
+import { ClearButton } from './ClearButton'
 import { Loader } from './Loader'
+import { UploadButton, ALLOWED_FILE_TYPES } from './UploadButton'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef } from 'react'
-import ClearIcon from '@mui/icons-material/Clear'
 import PermMediaIcon from '@mui/icons-material/PermMedia'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
-
-const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 
@@ -17,55 +16,6 @@ interface ImageUploadProps {
   onImageSelect: (file: File) => Promise<void>
   selectedImage: string | null
 }
-
-interface UploadButtonProps {
-  capture?: 'user' | 'environment'
-  icon: React.ReactNode
-  inputRef: React.RefObject<HTMLInputElement | null>
-  label: string
-  onFileSelect: (event: React.ChangeEvent<HTMLInputElement>) => void
-}
-
-const ClearButton = ({ onClick }: { onClick: () => void }) => (
-  <Fab
-    color="error"
-    onClick={onClick}
-    role={undefined}
-    sx={{ height: '44px', p: 0, minWidth: '44px' }}
-    tabIndex={0}
-    variant="extended"
-  >
-    <ClearIcon />
-  </Fab>
-)
-
-const UploadButton = ({ capture, icon, inputRef, label, onFileSelect }: UploadButtonProps) => (
-  <Fab component="label" role={undefined} sx={{ height: 'auto', minHeight: '44px' }} tabIndex={-1} variant="extended">
-    {icon}
-
-    {label}
-
-    <VisuallyHiddenInput
-      accept={ALLOWED_FILE_TYPES.join(',')}
-      capture={capture}
-      onChange={onFileSelect}
-      ref={inputRef}
-      type="file"
-    />
-  </Fab>
-)
-
-const VisuallyHiddenInput = styled('input')({
-  bottom: 0,
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  height: 1,
-  left: 0,
-  overflow: 'hidden',
-  position: 'absolute',
-  whiteSpace: 'nowrap',
-  width: 1
-})
 
 export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, selectedImage }: ImageUploadProps) => {
   const cameraInputRef = useRef<HTMLInputElement>(null)
