@@ -20,7 +20,21 @@ export const processTodoImage = async (base64Image: string): Promise<TodoItem[]>
     }
   )
 
-  if (!response.ok) throw new APIError('Failed to process image')
+  if (!response.ok) {
+    try {
+      const errorData = await response.json()
+
+      if (errorData.error && errorData.error.includes('The model is overloaded')) {
+        throw new APIError('The AI model is currently overloaded. Please try again in a few minutes.')
+      }
+
+      if (errorData.error) throw new APIError(errorData.error)
+    } catch (error) {
+      if (error instanceof APIError) throw error
+    }
+
+    throw new APIError('Failed to process image')
+  }
 
   return response.json()
 }
