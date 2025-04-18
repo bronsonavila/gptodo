@@ -2,9 +2,9 @@
 
 GPTodo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.
 
-![Demo of GPTodo App](./assets/demo.gif)
+![Demo of GPTodo](./assets/demo.gif)
 
-[Live Demo](https://gptodo.app)
+[Live Site](https://gptodo.app)
 
 > 💡 Each conversion costs some fraction of a cent – please be gentle.
 
