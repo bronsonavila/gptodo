@@ -2,52 +2,57 @@ import { Box, Paper, Typography } from '@mui/material'
 import { ClearButton } from './ClearButton'
 import { Loader } from './Loader'
 import { UploadButton, ALLOWED_FILE_TYPES } from './UploadButton'
+import { useAppContext } from '../context/AppContext'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
-import { useRef } from 'react'
+import { useRef, useCallback } from 'react'
 import PermMediaIcon from '@mui/icons-material/PermMedia'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+const MAX_FILE_SIZE_IN_MB = 10
 
-interface ImageUploadProps {
-  isLoading: boolean
-  onClear: () => void
-  onError?: (message: string) => void
-  onImageSelect: (file: File) => Promise<void>
-  selectedImage: string | null
-}
+export const ImageUpload = () => {
+  const { isLoading, selectedImage, handleClear, handleError, processSelectedFile } = useAppContext()
 
-export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, selectedImage }: ImageUploadProps) => {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supportsCaptureAttribute = useCaptureSupport()
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+  const validateFile = useCallback(
+    (file: File): boolean => {
+      if (!ALLOWED_FILE_TYPES.includes(file.type)) {
+        handleError('Please upload a valid image file (JPEG, PNG, or WebP)')
 
-    if (file && validateFile(file)) {
-      onImageSelect(file).catch(() => onError?.('An error occurred while processing the image.'))
-    }
+        return false
+      }
 
-    // Reset the file input value to allow re-uploading the same file
-    if (event.target) event.target.value = ''
-  }
+      if (file.size > MAX_FILE_SIZE_IN_MB * 1024 * 1024) {
+        handleError(`File size should be less than ${MAX_FILE_SIZE_IN_MB}MB`)
 
-  const validateFile = (file: File): boolean => {
-    if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-      onError?.('Please upload a valid image file (JPEG, PNG, or WebP)')
+        return false
+      }
 
-      return false
-    }
+      return true
+    },
+    [handleError]
+  )
 
-    if (file.size > MAX_FILE_SIZE) {
-      onError?.('File size should be less than 10MB')
+  const handleFileSelect = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0]
 
-      return false
-    }
+      if (file && validateFile(file)) {
+        processSelectedFile(file).catch(error => {
+          console.error('Error during file processing chain:', error)
 
-    return true
-  }
+          handleError('An error occurred while processing the image.')
+        })
+      }
+
+      // Reset the file input value to allow re-uploading the same file
+      if (event.target) event.target.value = ''
+    },
+    [validateFile, processSelectedFile, handleError]
+  )
 
   return (
     <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
@@ -79,7 +84,7 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
               />
             )}
 
-            {selectedImage && <ClearButton onClick={onClear} />}
+            {selectedImage && <ClearButton onClick={handleClear} />}
           </>
         )}
       </Box>

@@ -1,21 +1,17 @@
 import { Alert, Snackbar } from '@mui/material'
-import { ErrorState } from '../types'
+import { useAppContext } from '../context/AppContext'
 
-interface ErrorNotificationProps {
-  error: ErrorState
-  onClose: () => void
-  processingError: string | null
-}
+export const ErrorNotification = () => {
+  const { error, processingError, clearError } = useAppContext()
 
-export const ErrorNotification = ({ error, onClose, processingError }: ErrorNotificationProps) => {
   return (
     <Snackbar
       anchorOrigin={{ horizontal: 'center', vertical: 'bottom' }}
       autoHideDuration={6000}
-      onClose={onClose}
+      onClose={clearError}
       open={error.show || !!processingError}
     >
-      <Alert onClose={onClose} severity="error" sx={{ width: '100%' }}>
+      <Alert onClose={clearError} severity="error" sx={{ width: '100%' }}>
         {error.message || processingError}
       </Alert>
     </Snackbar>

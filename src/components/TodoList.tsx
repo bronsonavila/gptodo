@@ -1,12 +1,9 @@
 import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material'
-import { TodoItem } from '../types'
+import { useAppContext } from '../context/AppContext'
 
-interface TodoListProps {
-  onToggle: (index: number) => void
-  todos: TodoItem[]
-}
+export const TodoList = () => {
+  const { todos, handleToggle } = useAppContext()
 
-export const TodoList = ({ onToggle, todos }: TodoListProps) => {
   if (todos.length === 0) {
     return (
       <Paper
@@ -42,7 +39,7 @@ export const TodoList = ({ onToggle, todos }: TodoListProps) => {
           >
             <ListItemButton
               aria-checked={item.completed}
-              onClick={() => onToggle(index)}
+              onClick={() => handleToggle(index)}
               role="checkbox"
               sx={{ py: 0.75 }}
             >

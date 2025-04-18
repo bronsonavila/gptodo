@@ -1,101 +1,13 @@
-import { cacheService } from './services/cacheService'
 import { Box, Container, CssBaseline, ThemeProvider } from '@mui/material'
 import { darkTheme } from './theme'
 import { ErrorNotification } from './components/ErrorNotification'
-import { ErrorState } from './types'
 import { Footer } from './components/Footer'
 import { ImageUpload } from './components/ImageUpload'
 import { TodoList } from './components/TodoList'
-import { useEffect, useState } from 'react'
-import { useImageProcessing } from './hooks/useImageProcessing'
-import { useTodoList } from './hooks/useTodoList'
+import { useAppContext } from './context/AppContext'
 
 export const App = () => {
-  const [error, setError] = useState<ErrorState>({ show: false, message: '' })
-  const [hasCacheBeenChecked, setHasCacheBeenChecked] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedImage, setSelectedImage] = useState<string | null>(null)
-
-  const { todos, handleToggle, updateTodos, clearTodos } = useTodoList()
-  const { error: processingError, processImage } = useImageProcessing(updateTodos)
-
-  const checkCacheOnInitialRender = async () => {
-    try {
-      const hasMismatchedState = await cacheService.hasMismatchedCacheState()
-
-      if (hasMismatchedState) {
-        await cacheService.clearCachedImage()
-
-        setHasCacheBeenChecked(true)
-
-        return
-      }
-
-      const cachedImage = await cacheService.getCachedImage()
-
-      if (cachedImage) setSelectedImage(cachedImage)
-    } catch (err) {
-      console.error('Error checking cache:', err)
-    } finally {
-      setHasCacheBeenChecked(true)
-    }
-  }
-
-  const handleClear = async () => {
-    try {
-      await cacheService.clearCache()
-
-      clearTodos()
-      setSelectedImage(null)
-    } catch (error) {
-      console.error('Error clearing data:', error)
-
-      handleError('Failed to clear data. Please try again.')
-    }
-  }
-
-  const handleError = (message: string) => setError({ show: true, message })
-
-  const processSelectedFile = async (file: File): Promise<void> => {
-    clearTodos()
-    setIsLoading(true)
-    setSelectedImage(null)
-
-    const reader = new FileReader()
-
-    reader.onload = async event => {
-      const imageData = event.target?.result as string
-
-      try {
-        const base64Image = imageData.split(',')[1]
-
-        if (!base64Image) throw new Error('Failed to process the image')
-
-        await cacheService.cacheImage(imageData)
-
-        await processImage(base64Image)
-
-        setSelectedImage(imageData)
-      } catch (error) {
-        console.error('Error:', error)
-
-        handleError('Failed to process the image. Please try again.')
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    reader.onerror = () => {
-      handleError('Error reading the file. Please try again.')
-      setIsLoading(false)
-    }
-
-    reader.readAsDataURL(file)
-  }
-
-  useEffect(() => {
-    checkCacheOnInitialRender()
-  }, [])
+  const { isLoading, selectedImage, hasCacheBeenChecked } = useAppContext()
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -114,21 +26,11 @@ export const App = () => {
               py: 2.5
             }}
           >
-            <ImageUpload
-              isLoading={isLoading}
-              onClear={handleClear}
-              onError={handleError}
-              onImageSelect={processSelectedFile}
-              selectedImage={selectedImage}
-            />
+            <ImageUpload />
 
-            {!isLoading && selectedImage !== null && <TodoList todos={todos} onToggle={handleToggle} />}
+            {!isLoading && selectedImage !== null && <TodoList />}
 
-            <ErrorNotification
-              error={error}
-              processingError={processingError}
-              onClose={() => setError({ show: false, message: '' })}
-            />
+            <ErrorNotification />
           </Container>
 
           <Footer />
