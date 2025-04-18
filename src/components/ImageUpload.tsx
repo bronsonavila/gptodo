@@ -1,9 +1,9 @@
-import { Box, styled, Fab, Paper } from '@mui/material'
+import { Box, styled, Fab, Paper, Typography } from '@mui/material'
 import { Loader } from './Loader'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef } from 'react'
 import ClearIcon from '@mui/icons-material/Clear'
-import CloudUploadIcon from '@mui/icons-material/CloudUpload'
+import PermMediaIcon from '@mui/icons-material/PermMedia'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 
 const ALLOWED_FILE_TYPES = ['image/jpeg', 'image/png', 'image/webp']
@@ -101,15 +101,21 @@ export const ImageUpload = ({ isLoading, onClear, onError, onImageSelect, select
 
   return (
     <Box sx={{ alignItems: 'center', display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}>
+      {!isLoading && selectedImage === null && (
+        <Typography align="center" sx={{ opacity: 0.7 }}>
+          Select a photo of your to-do list
+        </Typography>
+      )}
+
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
         {isLoading ? (
           <Loader />
         ) : (
           <>
             <UploadButton
-              icon={<CloudUploadIcon sx={{ mr: 1 }} />}
+              icon={<PermMediaIcon sx={{ mr: 1 }} />}
               inputRef={fileInputRef}
-              label="Upload"
+              label="Browse"
               onFileSelect={handleFileSelect}
             />
 
