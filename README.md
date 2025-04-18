@@ -25,5 +25,5 @@ GPTodo converts my shopping list photo into a checklist. I take a picture of my 
 - Frontend: React with TypeScript
 - Build System: Rsbuild
 - Backend: Supabase Edge Functions
-- AI Integration: Google Gemini AI
+- AI Integration: Google Gemini
 - Deployment: Netlify
