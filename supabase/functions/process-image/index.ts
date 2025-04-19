@@ -20,7 +20,6 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://gptodo.app',
   'https://gptodo.netlify.app',
-  'https://localhost:3000',
   'https://www.gptodo.app'
 ]
 
