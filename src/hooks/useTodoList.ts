@@ -24,11 +24,10 @@ export const useTodoList = () => {
     ;(async () => {
       try {
         const cachedTodos = await cacheService.getCachedTodoList()
-        if (cachedTodos && cachedTodos.length > 0) {
-          setTodos(cachedTodos)
-        }
-      } catch (err) {
-        console.error('Error loading cached todos:', err)
+
+        if (cachedTodos && cachedTodos.length > 0) setTodos(cachedTodos)
+      } catch (error) {
+        console.error('Error loading cached todos:', error)
       }
     })()
   }, [])
@@ -38,5 +37,5 @@ export const useTodoList = () => {
     if (todos.length > 0) cacheService.cacheTodoList(todos)
   }, [todos])
 
-  return { clearTodos, handleToggle, todos, updateTodos }
+  return { todos, clearTodos, handleToggle, updateTodos }
 }
