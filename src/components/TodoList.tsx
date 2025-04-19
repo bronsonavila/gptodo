@@ -2,7 +2,9 @@ import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, P
 import { useAppContext } from '../context/AppContext'
 
 export const TodoList = () => {
-  const { todos, handleToggle } = useAppContext()
+  const { isLoading, selectedImage, todos, handleToggle } = useAppContext()
+
+  if (isLoading || selectedImage === null) return null
 
   if (todos.length === 0) {
     return (

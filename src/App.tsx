@@ -7,7 +7,7 @@ import { TodoList } from './components/TodoList'
 import { useAppContext } from './context/AppContext'
 
 export const App = () => {
-  const { isLoading, selectedImage, hasCacheBeenChecked } = useAppContext()
+  const { hasCacheBeenChecked } = useAppContext()
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -28,7 +28,7 @@ export const App = () => {
           >
             <ImageUpload />
 
-            {!isLoading && selectedImage !== null && <TodoList />}
+            <TodoList />
 
             <ErrorNotification />
           </Container>
