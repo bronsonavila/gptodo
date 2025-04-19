@@ -14,10 +14,10 @@ export const useImageProcessing = (onProcessSuccess: (todos: TodoItem[]) => void
       onProcessSuccess(data)
 
       return data
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred')
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An unknown error occurred')
 
-      throw err
+      throw error
     }
   }
 
