@@ -7,9 +7,12 @@ export const Footer = () => {
       <IconButton
         aria-label="GitHub repository"
         color="inherit"
-        onClick={() => window.open('https://github.com/bronsonavila/gptodo', '_blank')}
+        component="a"
+        href="https://github.com/bronsonavila/gptodo"
+        rel="noopener noreferrer"
         size="small"
         sx={{ '&:hover': { opacity: 0.8 } }}
+        target="_blank"
       >
         <GitHubIcon fontSize="small" />
       </IconButton>
