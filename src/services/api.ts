@@ -36,5 +36,9 @@ export const processTodoImage = async (base64Image: string): Promise<TodoItem[]>
     throw new APIError('Failed to process image')
   }
 
-  return response.json()
+  const textList: string[] = await response.json()
+
+  const todos: TodoItem[] = textList.map(text => ({ completed: false, text }))
+
+  return todos
 }

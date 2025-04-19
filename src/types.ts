@@ -1,9 +1,9 @@
-export interface TodoItem {
-  text: string
-  completed: boolean
+export interface ErrorState {
+  message: string
+  show: boolean
 }
 
-export interface ErrorState {
-  show: boolean
-  message: string
+export interface TodoItem {
+  completed: boolean
+  text: string
 }

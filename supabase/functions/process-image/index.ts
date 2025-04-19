@@ -11,11 +11,6 @@ interface ImageProcessingRequest {
   base64Image: string
 }
 
-interface TodoItem {
-  text: string
-  completed: boolean
-}
-
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://gptodo.app',
@@ -86,11 +81,11 @@ serve(async (req: Request): Promise<Response> => {
 
     const jsonResponse = JSON.parse(response.text())
 
-    const transformedResponse: TodoItem[] = jsonResponse.map(item => ({ text: item.text, completed: false }))
+    const textList: string[] = Array.isArray(jsonResponse)
+      ? jsonResponse.map(item => item.text).filter(text => typeof text === 'string')
+      : []
 
-    return new Response(JSON.stringify(transformedResponse), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-    })
+    return new Response(JSON.stringify(textList), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
   } catch (error) {
     const errorResponse: ErrorResponse = { error: error.message }
 
