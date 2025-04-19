@@ -2,6 +2,8 @@
   "name": "gptodo",
   "version": "1.0.0",
   "private": true,
+  "description": "GPTodo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.",
+  "author": "Bronson Avila",
   "type": "module",
   "scripts": {
     "build": "rsbuild build",
