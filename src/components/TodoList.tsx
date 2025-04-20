@@ -41,18 +41,10 @@ export const TodoList = () => {
               initial={{ opacity: item.completed ? 0.5 : 1 }}
               key={item.index}
               layout
-              style={{
-                listStyle: 'none',
-                position: 'relative', // Needed for layout animations
-                textDecoration: item.completed ? 'line-through' : 'none'
-              }}
+              style={{ listStyle: 'none', textDecoration: item.completed ? 'line-through' : 'none' }}
               transition={{ type: 'spring', bounce: 0.125, visualDuration: 0.25 }}
             >
-              <ListItem
-                component="div"
-                disablePadding
-                sx={{ position: 'static' /* Override position for ListItem itself */ }}
-              >
+              <ListItem component="div" disablePadding>
                 <ListItemButton
                   aria-checked={item.completed}
                   onClick={() => handleToggle(item.index)}
