@@ -33,15 +33,15 @@ export const TodoList = () => {
       sx={{ maxWidth: '500px', mb: 5, mt: 2.5, mx: 'auto', p: 1.5, width: '100%' }}
     >
       <List sx={{ width: '100%', py: 0 }}>
-        {todos.map((item, index) => (
+        {todos.map(item => (
           <ListItem
             disablePadding
-            key={index}
+            key={item.index}
             sx={{ opacity: item.completed ? 0.5 : 1, textDecoration: item.completed ? 'line-through' : 'none' }}
           >
             <ListItemButton
               aria-checked={item.completed}
-              onClick={() => handleToggle(index)}
+              onClick={() => handleToggle(item.index)}
               role="checkbox"
               sx={{ py: 0.75 }}
             >

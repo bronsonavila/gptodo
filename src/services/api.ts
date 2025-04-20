@@ -38,7 +38,7 @@ export const processTodoImage = async (base64Image: string): Promise<TodoItem[]>
 
   const textList: string[] = await response.json()
 
-  const todos: TodoItem[] = textList.map(text => ({ completed: false, text }))
+  const todos: TodoItem[] = textList.map((text, index) => ({ completed: false, index, text }))
 
   return todos
 }

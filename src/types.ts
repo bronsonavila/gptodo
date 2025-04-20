@@ -5,5 +5,6 @@ export interface ErrorState {
 
 export interface TodoItem {
   completed: boolean
+  index: number
   text: string
 }
