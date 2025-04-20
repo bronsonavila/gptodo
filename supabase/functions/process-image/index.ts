@@ -11,43 +11,42 @@ interface ImageProcessingRequest {
   base64Image: string
 }
 
+const AI_MODEL = 'gemini-2.5-pro-preview-03-25'
+
+const AI_PROMPT = `Extract text representing items in a list from the image, following these guidelines:
+1. Identify list structures based on consistent visual alignment (e.g., vertical stacking with similar starting horizontal positions, shared indentation).
+2. Combine text that visually spans multiple lines into a single list item if it clearly represents a continuation of the same thought or item. Do not automatically treat each line break as a new item.
+3. Each distinct list item identified should be a separate entry in the JSON array.
+4. Preserve the original order of the list items.
+5. Include all text segments that maintain the identified visual alignment (ignore color differences) and are legible, regardless of content differences (e.g., capitalization, text vs. numbers), unless explicitly excluded by the rules below.
+6. Exclude text only if it is:
+   - Positioned or formatted in a way that *clearly breaks* the main visual flow or alignment of the list (e.g., a distinct title set significantly apart, a paragraph elsewhere).
+   - Part of legends, keys, footnotes, or disclaimers explaining symbols or terms, even if visually arranged in a list-like manner.
+   - Significantly obscured or too blurry to read reliably.
+   - Purely decorative or formatting symbols (like bullet points, checkboxes, horizontal lines).
+7. Clean up the extracted text for each item by:
+   - Trimming leading/trailing whitespace.
+   - Joining multi-line text belonging to the same item with a single space.
+   - Correcting obvious typographical errors if possible without changing the meaning.
+8. If no text forming a list structure is found, return an empty array.`
+
+const AI_SCHEMA = {
+  type: SchemaType.ARRAY,
+  items: {
+    type: SchemaType.OBJECT,
+    properties: {
+      text: { type: SchemaType.STRING, description: 'A section of text extracted from the image' }
+    },
+    required: ['text']
+  }
+}
+
 const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://gptodo.app',
   'https://gptodo.netlify.app',
   'https://www.gptodo.app'
 ]
-
-const CONFIG = {
-  ai: {
-    model: 'gemini-2.5-pro-preview-03-25',
-    schema: {
-      type: SchemaType.ARRAY,
-      items: {
-        type: SchemaType.OBJECT,
-        properties: {
-          text: { type: SchemaType.STRING, description: 'A section of text extracted from the image' }
-        },
-        required: ['text']
-      }
-    }
-  },
-  prompt: `Extract text that appears to be items in a list based on the image's visual structure, following these guidelines:
-1. Each distinct item identified as part of a visual list should be a separate entry in the JSON array.
-2. Preserve the original order of the list items as they appear visually.
-3. Include any text segment if it meets these criteria:
-   - It is visually grouped and aligned with other items in a way that suggests a list (e.g., vertically stacked, similarly indented).
-   - It is clearly legible and appears complete.
-4. Exclude any text segment if:
-   - It is clearly separate from the visual grouping of the list items (e.g., a title, a paragraph elsewhere on the image).
-   - It is significantly obscured or too blurry to read reliably.
-   - It is purely decorative or formatting symbols (like bullet points, checkboxes, lines - do not include these symbols in the extracted text).
-5. Clean up the extracted text for each item by:
-   - Trimming leading/trailing whitespace.
-   - Correcting obvious typographical errors if possible without changing the meaning.
-   - Removing any list markers (like numbers, letters, or symbols) that might precede the actual text content of the item.
-6. If no text segments forming a list structure are found, return an empty array.`
-}
 
 serve(async (req: Request): Promise<Response> => {
   const origin = req.headers.get('origin')
@@ -69,13 +68,13 @@ serve(async (req: Request): Promise<Response> => {
     const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
 
     const model = genAI.getGenerativeModel({
-      model: CONFIG.ai.model,
-      generationConfig: { responseMimeType: 'application/json', responseSchema: CONFIG.ai.schema }
+      model: AI_MODEL,
+      generationConfig: { responseMimeType: 'application/json', responseSchema: AI_SCHEMA }
     })
 
     const { response } = await model.generateContent([
       { inlineData: { data: base64Image, mimeType: 'image/jpeg' } },
-      CONFIG.prompt
+      AI_PROMPT
     ])
 
     const jsonResponse = JSON.parse(response.text())
