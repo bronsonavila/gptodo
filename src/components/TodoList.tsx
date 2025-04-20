@@ -37,7 +37,7 @@ export const TodoList = () => {
           <ListItem
             disablePadding
             key={index}
-            sx={{ opacity: item.completed ? 0.7 : 1, textDecoration: item.completed ? 'line-through' : 'none' }}
+            sx={{ opacity: item.completed ? 0.5 : 1, textDecoration: item.completed ? 'line-through' : 'none' }}
           >
             <ListItemButton
               aria-checked={item.completed}
