@@ -1,4 +1,5 @@
 import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAppContext } from '../context/AppContext'
 
 export const TodoList = () => {
@@ -33,32 +34,47 @@ export const TodoList = () => {
       sx={{ maxWidth: '500px', mb: 5, mt: 2.5, mx: 'auto', p: 1.5, width: '100%' }}
     >
       <List sx={{ width: '100%', py: 0 }}>
-        {todos.map(item => (
-          <ListItem
-            disablePadding
-            key={item.index}
-            sx={{ opacity: item.completed ? 0.5 : 1, textDecoration: item.completed ? 'line-through' : 'none' }}
-          >
-            <ListItemButton
-              aria-checked={item.completed}
-              onClick={() => handleToggle(item.index)}
-              role="checkbox"
-              sx={{ py: 0.75 }}
+        <AnimatePresence mode="popLayout">
+          {todos.map(item => (
+            <motion.li
+              animate={{ opacity: item.completed ? 0.5 : 1 }}
+              initial={{ opacity: item.completed ? 0.5 : 1 }}
+              key={item.index}
+              layout
+              style={{
+                listStyle: 'none',
+                position: 'relative', // Needed for layout animations
+                textDecoration: item.completed ? 'line-through' : 'none'
+              }}
+              transition={{ type: 'spring', bounce: 0.125, visualDuration: 0.25 }}
             >
-              <ListItemIcon sx={{ minWidth: 36 }}>
-                <Checkbox checked={item.completed} disableRipple edge="start" size="small" tabIndex={-1} />
-              </ListItemIcon>
+              <ListItem
+                component="div"
+                disablePadding
+                sx={{ position: 'static' /* Override position for ListItem itself */ }}
+              >
+                <ListItemButton
+                  aria-checked={item.completed}
+                  onClick={() => handleToggle(item.index)}
+                  role="checkbox"
+                  sx={{ py: 0.75 }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36 }}>
+                    <Checkbox checked={item.completed} disableRipple edge="start" size="small" tabIndex={-1} />
+                  </ListItemIcon>
 
-              <ListItemText
-                primary={
-                  <Typography sx={{ fontSize: '0.95rem' }} variant="body2">
-                    {item.text}
-                  </Typography>
-                }
-              />
-            </ListItemButton>
-          </ListItem>
-        ))}
+                  <ListItemText
+                    primary={
+                      <Typography sx={{ fontSize: '0.95rem' }} variant="body2">
+                        {item.text}
+                      </Typography>
+                    }
+                  />
+                </ListItemButton>
+              </ListItem>
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </List>
     </Paper>
   )
