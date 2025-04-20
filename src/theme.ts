@@ -26,6 +26,11 @@ export const darkTheme = createTheme({
     fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif'
   },
   components: {
+    MuiButtonBase: {
+      defaultProps: {
+        disableRipple: true
+      }
+    },
     MuiButton: {
       styleOverrides: {
         root: {

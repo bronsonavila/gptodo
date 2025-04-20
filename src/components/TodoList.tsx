@@ -60,7 +60,7 @@ export const TodoList = () => {
                   sx={{ py: 0.75 }}
                 >
                   <ListItemIcon sx={{ minWidth: 36 }}>
-                    <Checkbox checked={item.completed} disableRipple edge="start" size="small" tabIndex={-1} />
+                    <Checkbox checked={item.completed} edge="start" size="small" tabIndex={-1} />
                   </ListItemIcon>
 
                   <ListItemText
