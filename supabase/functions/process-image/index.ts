@@ -32,22 +32,21 @@ const CONFIG = {
       }
     }
   },
-  prompt: `Extract only list-formatted text from this image following these guidelines:
-1. Each list item should be a separate item in the JSON array
-2. Preserve the original order of the list items
-3. Only include text that is:
-   - Clearly part of a list or checklist
-   - Clearly legible and complete
-4. Ignore any text that is:
-   - Not part of a list structure
-   - Partially obscured
-   - Too blurry to read
-   - Part of the background or decorative elements (including bullet points, checkboxes, and other formatting symbols)
-5. Clean up the text by:
-   - Removing extra whitespace
-   - Fixing obvious typos
-   - Removing any list markers (bullet points, numbers, etc.)
-6. If no list items are found, return an empty array`
+  prompt: `Extract text that appears to be items in a list based on the image's visual structure, following these guidelines:
+1. Each distinct item identified as part of a visual list should be a separate entry in the JSON array.
+2. Preserve the original order of the list items as they appear visually.
+3. Include any text segment if it meets these criteria:
+   - It is visually grouped and aligned with other items in a way that suggests a list (e.g., vertically stacked, similarly indented).
+   - It is clearly legible and appears complete.
+4. Exclude any text segment if:
+   - It is clearly separate from the visual grouping of the list items (e.g., a title, a paragraph elsewhere on the image).
+   - It is significantly obscured or too blurry to read reliably.
+   - It is purely decorative or formatting symbols (like bullet points, checkboxes, lines - do not include these symbols in the extracted text).
+5. Clean up the extracted text for each item by:
+   - Trimming leading/trailing whitespace.
+   - Correcting obvious typographical errors if possible without changing the meaning.
+   - Removing any list markers (like numbers, letters, or symbols) that might precede the actual text content of the item.
+6. If no text segments forming a list structure are found, return an empty array.`
 }
 
 serve(async (req: Request): Promise<Response> => {
