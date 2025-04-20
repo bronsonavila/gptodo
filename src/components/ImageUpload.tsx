@@ -1,6 +1,7 @@
 import { Box, Paper, Typography } from '@mui/material'
 import { ClearButton } from './ClearButton'
 import { Loader } from './Loader'
+import { motion } from 'framer-motion'
 import { UploadButton, ALLOWED_FILE_TYPES } from './UploadButton'
 import { useAppContext } from '../context/AppContext'
 import { useCaptureSupport } from '../hooks/useCaptureSupport'
@@ -90,14 +91,21 @@ export const ImageUpload = () => {
       </Box>
 
       {selectedImage && !isLoading && (
-        <Paper elevation={2} sx={{ borderRadius: 1, maxWidth: '500px', mt: 0.5, overflow: 'hidden', width: '100%' }}>
-          <Box
-            alt="Uploaded image"
-            component="img"
-            src={selectedImage}
-            sx={{ display: 'block', maxHeight: 'calc(50vh)', maxWidth: '100%', objectFit: 'contain', width: '100%' }}
-          />
-        </Paper>
+        <motion.div
+          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          style={{ width: '100%', maxWidth: '500px', marginTop: '4px' }}
+          transition={{ duration: 0.25, ease: 'easeOut' }}
+        >
+          <Paper elevation={2} sx={{ borderRadius: 1, overflow: 'hidden', width: '100%' }}>
+            <Box
+              alt="Uploaded image"
+              component="img"
+              src={selectedImage}
+              sx={{ display: 'block', maxHeight: 'calc(50vh)', maxWidth: '100%', objectFit: 'contain', width: '100%' }}
+            />
+          </Paper>
+        </motion.div>
       )}
     </Box>
   )
