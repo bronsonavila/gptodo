@@ -11,6 +11,7 @@ interface AppContextType {
   hasCacheBeenChecked: boolean
   isCaptureCheckComplete: boolean
   isLoading: boolean
+  isSortedAlphabetically: boolean
   processingError: string | null
   selectedImage: string | null
   supportsCaptureAttribute: boolean
@@ -20,7 +21,8 @@ interface AppContextType {
   clearError: () => void
   handleClear: () => Promise<void>
   handleError: (message: string) => void
-  handleToggle: (index: number) => void
+  handleToggleSort: () => void
+  handleToggleTodo: (index: number) => void
   processSelectedFile: (file: File) => Promise<void>
 }
 
@@ -32,7 +34,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
 
-  const { todos, handleToggle, updateTodos, clearTodos } = useTodoList()
+  const { isSortedAlphabetically, todos, clearTodos, handleToggleSort, handleToggleTodo, resetSort, updateTodos } =
+    useTodoList()
   const { error: processingError, processImage } = useImageProcessing(updateTodos)
   const { isCaptureCheckComplete, supportsCaptureAttribute } = useCaptureSupport()
 
@@ -79,6 +82,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const processSelectedFile = useCallback(
     async (file: File): Promise<void> => {
       clearTodos()
+      resetSort()
       setIsLoading(true)
       setSelectedImage(null)
       setError({ show: false, message: '' })
@@ -119,7 +123,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
       reader.readAsDataURL(file)
     },
-    [clearTodos, processImage, handleError]
+    [clearTodos, handleError, processImage, resetSort]
   )
 
   useEffect(() => {
@@ -131,6 +135,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     hasCacheBeenChecked,
     isCaptureCheckComplete,
     isLoading,
+    isSortedAlphabetically,
     processingError,
     selectedImage,
     supportsCaptureAttribute,
@@ -138,7 +143,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     clearError,
     handleClear,
     handleError,
-    handleToggle,
+    handleToggleSort,
+    handleToggleTodo,
     processSelectedFile
   }
 

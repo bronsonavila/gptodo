@@ -1,24 +1,42 @@
 import { cacheService } from '../services/cacheService'
 import { TodoItem } from '../types'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 
 export const useTodoList = () => {
   const [initialLoadComplete, setInitialLoadComplete] = useState(false)
+  const [isSortedAlphabetically, setIsSortedAlphabetically] = useState(false)
   const [todos, setTodos] = useState<TodoItem[]>([])
 
-  // Sort todos: incomplete first, then by index
-  const sortedTodos = useMemo(
-    () => [...todos].sort((a, b) => (a.completed ? 1 : 0) - (b.completed ? 1 : 0) || a.index - b.index),
-    [todos]
-  )
+  // Sort todos:
+  // 1. Separate into incomplete and complete
+  // 2. If sorting alphabetically, sort each group by text
+  // 3. If not sorting alphabetically, sort each group by index
+  // 4. Concatenate incomplete and complete groups
+  const sortedTodos = useMemo(() => {
+    const incomplete = todos.filter(todo => !todo.completed)
+    const complete = todos.filter(todo => todo.completed)
+
+    const sortFn = isSortedAlphabetically
+      ? (a: TodoItem, b: TodoItem) => a.text.localeCompare(b.text)
+      : (a: TodoItem, b: TodoItem) => a.index - b.index
+
+    incomplete.sort(sortFn)
+    complete.sort(sortFn)
+
+    return [...incomplete, ...complete]
+  }, [todos, isSortedAlphabetically])
 
   const clearTodos = () => setTodos([])
 
-  const handleToggle = (todoIndex: number) => {
+  const handleToggleSort = useCallback(() => setIsSortedAlphabetically(prev => !prev), [])
+
+  const handleToggleTodo = (todoIndex: number) => {
     setTodos(previousTodos =>
       previousTodos.map(todo => (todo.index === todoIndex ? { ...todo, completed: !todo.completed } : todo))
     )
   }
+
+  const resetSort = useCallback(() => setIsSortedAlphabetically(false), [])
 
   const updateTodos = (newTodos: TodoItem[]) => setTodos(newTodos)
 
@@ -26,16 +44,26 @@ export const useTodoList = () => {
   useEffect(() => {
     ;(async () => {
       try {
+        const cachedSortState = await cacheService.getCachedSortState()
         const cachedTodos = await cacheService.getCachedTodoList()
+
+        if (cachedSortState !== null) setIsSortedAlphabetically(cachedSortState)
 
         if (cachedTodos && cachedTodos.length > 0) setTodos(cachedTodos)
       } catch (error) {
-        console.error('Error loading cached todos:', error)
+        console.error('Error loading cached data:', error)
       } finally {
         setInitialLoadComplete(true)
       }
     })()
   }, [])
+
+  // Cache sort state whenever it changes
+  useEffect(() => {
+    if (!initialLoadComplete) return
+
+    cacheService.cacheSortState(isSortedAlphabetically)
+  }, [isSortedAlphabetically, initialLoadComplete])
 
   // Cache todos whenever they change
   useEffect(() => {
@@ -50,5 +78,13 @@ export const useTodoList = () => {
     }
   }, [todos, initialLoadComplete])
 
-  return { todos: sortedTodos, clearTodos, handleToggle, updateTodos }
+  return {
+    isSortedAlphabetically,
+    todos: sortedTodos,
+    clearTodos,
+    handleToggleTodo,
+    handleToggleSort,
+    resetSort,
+    updateTodos
+  }
 }

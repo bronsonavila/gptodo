@@ -1,4 +1,16 @@
-import { Checkbox, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Paper, Typography } from '@mui/material'
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Paper,
+  Switch,
+  Typography
+} from '@mui/material'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useAppContext } from '../context/AppContext'
 
@@ -9,7 +21,8 @@ const SHARED_MOTION_PROPS = {
 }
 
 export const TodoList = () => {
-  const { isLoading, selectedImage, todos, handleToggle } = useAppContext()
+  const { isLoading, isSortedAlphabetically, selectedImage, todos, handleToggleSort, handleToggleTodo } =
+    useAppContext()
 
   if (isLoading || selectedImage === null) return null
 
@@ -36,6 +49,14 @@ export const TodoList = () => {
 
   return (
     <motion.div {...SHARED_MOTION_PROPS} style={{ width: '100%', maxWidth: '500px', margin: '20px auto 40px auto' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1.25 }}>
+        <FormControlLabel
+          control={<Switch checked={isSortedAlphabetically} onChange={handleToggleSort} size="small" />}
+          label={<Typography sx={{ fontSize: '0.8rem', pl: 0.5 }}>Sort A–Z</Typography>}
+          sx={{ mr: 0.5 }}
+        />
+      </Box>
+
       <Paper aria-label="Todo list" elevation={2} role="region" sx={{ p: 1.5, width: '100%' }}>
         <List sx={{ width: '100%', py: 0 }}>
           <AnimatePresence mode="popLayout">
@@ -51,7 +72,7 @@ export const TodoList = () => {
                 <ListItem component="div" disablePadding>
                   <ListItemButton
                     aria-checked={item.completed}
-                    onClick={() => handleToggle(item.index)}
+                    onClick={() => handleToggleTodo(item.index)}
                     role="checkbox"
                     sx={{ py: 0.75 }}
                   >

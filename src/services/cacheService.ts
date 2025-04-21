@@ -2,6 +2,7 @@ import { TodoItem } from '../types'
 
 const CACHE_NAME = 'gptodo-cache'
 const IMAGE_KEY = 'current-image'
+const SORT_STATE_KEY = 'sort-state'
 const TODO_LIST_KEY = 'todo-list'
 
 /**
@@ -19,6 +20,13 @@ export const cacheService = {
     const imageResponse = new Response(fullImageData)
 
     await cache.put(IMAGE_KEY, imageResponse)
+  },
+
+  async cacheSortState(isSorted: boolean): Promise<void> {
+    const cache = await this.initCache()
+    const sortStateResponse = new Response(JSON.stringify(isSorted))
+
+    await cache.put(SORT_STATE_KEY, sortStateResponse)
   },
 
   async cacheTodoList(todos: TodoItem[]): Promise<void> {
@@ -54,6 +62,23 @@ export const cacheService = {
       console.error('Error retrieving cached image:', error)
 
       return null
+    }
+  },
+
+  async getCachedSortState(): Promise<boolean | null> {
+    try {
+      const cache = await this.initCache()
+      const response = await cache.match(SORT_STATE_KEY)
+
+      if (!response) return false
+
+      const sortStateData = await response.text()
+
+      return JSON.parse(sortStateData)
+    } catch (error) {
+      console.error('Error retrieving cached sort state:', error)
+
+      return false
     }
   },
 
