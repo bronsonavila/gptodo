@@ -7,13 +7,13 @@ import { TodoList } from './components/TodoList'
 import { useAppContext } from './context/AppContext'
 
 export const App = () => {
-  const { hasCacheBeenChecked } = useAppContext()
+  const { hasCacheBeenChecked, isCaptureCheckComplete } = useAppContext()
 
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
 
-      {hasCacheBeenChecked && (
+      {hasCacheBeenChecked && isCaptureCheckComplete && (
         <Box sx={{ minHeight: '100dvh', position: 'relative', width: '100%' }}>
           <Container
             maxWidth="md"

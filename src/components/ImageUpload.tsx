@@ -4,7 +4,6 @@ import { Loader } from './Loader'
 import { motion } from 'framer-motion'
 import { UploadButton, ALLOWED_FILE_TYPES } from './UploadButton'
 import { useAppContext } from '../context/AppContext'
-import { useCaptureSupport } from '../hooks/useCaptureSupport'
 import { useRef, useCallback } from 'react'
 import PermMediaIcon from '@mui/icons-material/PermMedia'
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
@@ -12,11 +11,11 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 const MAX_FILE_SIZE_IN_MB = 10
 
 export const ImageUpload = () => {
-  const { isLoading, selectedImage, handleClear, handleError, processSelectedFile } = useAppContext()
+  const { isLoading, selectedImage, supportsCaptureAttribute, handleClear, handleError, processSelectedFile } =
+    useAppContext()
 
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const supportsCaptureAttribute = useCaptureSupport()
 
   const validateFile = useCallback(
     (file: File): boolean => {

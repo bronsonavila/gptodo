@@ -3,14 +3,17 @@ import { createContext, useState, useEffect, useContext, ReactNode, useCallback 
 import { ErrorState, TodoItem } from '../types'
 import { useImageProcessing } from '../hooks/useImageProcessing'
 import { useTodoList } from '../hooks/useTodoList'
+import { useCaptureSupport } from '../hooks/useCaptureSupport'
 
 interface AppContextType {
   // State
   error: ErrorState
   hasCacheBeenChecked: boolean
+  isCaptureCheckComplete: boolean
   isLoading: boolean
   processingError: string | null
   selectedImage: string | null
+  supportsCaptureAttribute: boolean
   todos: TodoItem[]
 
   // Handlers
@@ -31,6 +34,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const { todos, handleToggle, updateTodos, clearTodos } = useTodoList()
   const { error: processingError, processImage } = useImageProcessing(updateTodos)
+  const { isCaptureCheckComplete, supportsCaptureAttribute } = useCaptureSupport()
 
   const clearError = useCallback(() => setError({ show: false, message: '' }), [])
 
@@ -125,9 +129,11 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const contextValue: AppContextType = {
     error,
     hasCacheBeenChecked,
+    isCaptureCheckComplete,
     isLoading,
     processingError,
     selectedImage,
+    supportsCaptureAttribute,
     todos,
     clearError,
     handleClear,

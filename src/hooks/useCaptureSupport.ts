@@ -11,14 +11,16 @@ import { useState, useEffect } from 'react'
  * - WebView Android
  * - WebView on iOS
  */
-export const useCaptureSupport = (): boolean => {
+export const useCaptureSupport = () => {
   const [supportsCaptureAttribute, setSupportsCaptureAttribute] = useState(false)
+  const [isCaptureCheckComplete, setIsCaptureCheckComplete] = useState(false)
 
   useEffect(() => {
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
 
     if (!isMobileDevice) {
       setSupportsCaptureAttribute(false)
+      setIsCaptureCheckComplete(true)
 
       return
     }
@@ -31,10 +33,12 @@ export const useCaptureSupport = (): boolean => {
       input.capture = 'environment'
 
       setSupportsCaptureAttribute('capture' in HTMLInputElement.prototype || input.capture === 'environment')
-    } catch (e) {
+    } catch (error) {
       setSupportsCaptureAttribute(false)
+    } finally {
+      setIsCaptureCheckComplete(true)
     }
   }, [])
 
-  return supportsCaptureAttribute
+  return { supportsCaptureAttribute, isCaptureCheckComplete }
 }
