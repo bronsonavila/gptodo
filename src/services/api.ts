@@ -24,7 +24,7 @@ export const processTodoImage = async (base64Image: string): Promise<TodoItem[]>
     try {
       const errorData = await response.json()
 
-      if (errorData.error && errorData.error.includes('The model is overloaded')) {
+      if (errorData.error && errorData.error.includes('503 Service Unavailable')) {
         throw new APIError('The AI model is currently overloaded. Please try again in a few minutes.')
       }
 
