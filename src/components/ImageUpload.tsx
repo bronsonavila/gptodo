@@ -68,7 +68,7 @@ export const ImageUpload = () => {
         ) : (
           <motion.div
             animate={{ opacity: 1, y: 0 }}
-            initial={{ opacity: 0, y: -5 }}
+            initial={!isLoading && selectedImage === null ? { opacity: 1, y: 0 } : { opacity: 0, y: -5 }}
             style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}
             transition={{ duration: 0.25, ease: 'easeOut' }}
           >
