@@ -62,11 +62,16 @@ export const ImageUpload = () => {
         </Typography>
       )}
 
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2.5, justifyContent: 'center', minHeight: '44px' }}>
+      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '44px', width: '100%' }}>
         {isLoading ? (
           <Loader />
         ) : (
-          <>
+          <motion.div
+            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: -5 }}
+            style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}
+            transition={{ duration: 0.25, ease: 'easeOut' }}
+          >
             <UploadButton
               icon={<PermMediaIcon sx={{ mr: 1 }} />}
               inputRef={fileInputRef}
@@ -85,7 +90,7 @@ export const ImageUpload = () => {
             )}
 
             {selectedImage && <ClearButton onClick={handleClear} />}
-          </>
+          </motion.div>
         )}
       </Box>
 
