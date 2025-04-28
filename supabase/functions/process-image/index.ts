@@ -23,7 +23,7 @@ const AI_PROMPT = `Extract text representing items in a list from the image, fol
    - Positioned or formatted in a way that *clearly breaks* the main visual flow or alignment of the list (e.g., a distinct title set significantly apart, a paragraph elsewhere).
    - Part of legends, keys, footnotes, or disclaimers explaining symbols or terms, even if visually arranged in a list-like manner.
    - Significantly obscured or too blurry to read reliably.
-   - Purely decorative or formatting symbols (like bullet points, checkboxes, horizontal lines).
+   - Purely decorative or formatting symbols (e.g., bullet points, horizontal lines).
 7. Clean up the extracted text for each item by:
    - Trimming leading/trailing whitespace.
    - Joining multi-line text belonging to the same item with a single space.
