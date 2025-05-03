@@ -1,8 +1,8 @@
-# GPTodo
+# GPToDo
 
-GPTodo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.
+GPToDo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.
 
-![Demo of GPTodo](./assets/demo.gif)
+![Demo of  GPToDo](./assets/demo.gif)
 
 [Live Site](https://gptodo.app)
 
@@ -16,7 +16,7 @@ I have a dry erase board on my refrigerator where I write down groceries to buy.
 
 ### The Solution
 
-GPTodo converts my shopping list photo into a checklist. I take a picture of my whiteboard, upload it, and check off items as I shop. Easy.
+GPToDo converts my shopping list photo into a checklist. I take a picture of my whiteboard, upload it, and check off items as I shop. Easy.
 
 ---
 

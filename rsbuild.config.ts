@@ -7,7 +7,7 @@ export default defineConfig({
 
     meta: {
       author: 'Bronson Avila',
-      description: 'GPTodo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.',
+      description: ' GPToDo uses AI to convert photos of handwritten or typed to-do lists into interactive checklists.',
       keywords: 'ai, checklist, gemini, image recognition, list, todo, vision'
     },
 
@@ -30,7 +30,7 @@ gtag('config', '${process.env.PUBLIC_GOOGLE_ANALYTICS_ID}');
       }
     ],
 
-    title: 'GPTodo'
+    title: ' GPToDo'
   },
 
   plugins: [pluginReact()]
