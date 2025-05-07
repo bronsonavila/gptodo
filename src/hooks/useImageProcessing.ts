@@ -1,9 +1,11 @@
 import { processTodoImage } from '../services/api'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import type { TodoItem } from '../types'
 
 export const useImageProcessing = (onProcessSuccess: (todos: TodoItem[]) => void) => {
   const [error, setError] = useState<string | null>(null)
+
+  const clearProcessingError = useCallback(() => setError(null), [])
 
   const processImage = async (base64Image: string) => {
     setError(null)
@@ -21,5 +23,5 @@ export const useImageProcessing = (onProcessSuccess: (todos: TodoItem[]) => void
     }
   }
 
-  return { error, processImage }
+  return { error, clearProcessingError, processImage }
 }

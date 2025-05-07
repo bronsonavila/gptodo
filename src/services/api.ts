@@ -28,7 +28,7 @@ export const processTodoImage = async (base64Image: string): Promise<TodoItem[]>
         throw new APIError('The AI model is currently overloaded. Please try again in a few minutes.')
       }
 
-      if (errorData.error) throw new APIError(errorData.error)
+      if (errorData.error) throw new APIError('AI service unavailable. Please try again later.')
     } catch (error) {
       if (error instanceof APIError) throw error
     }

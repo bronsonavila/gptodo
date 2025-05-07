@@ -36,10 +36,14 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const { isSortedAlphabetically, todos, clearTodos, handleToggleSort, handleToggleTodo, resetSort, updateTodos } =
     useTodoList()
-  const { error: processingError, processImage } = useImageProcessing(updateTodos)
+  const { error: processingError, clearProcessingError, processImage } = useImageProcessing(updateTodos)
   const { isCaptureCheckComplete, supportsCaptureAttribute } = useCaptureSupport()
 
-  const clearError = useCallback(() => setError({ show: false, message: '' }), [])
+  const clearError = useCallback(() => {
+    setError({ show: false, message: '' })
+
+    clearProcessingError?.()
+  }, [clearProcessingError])
 
   const handleError = useCallback((message: string) => setError({ show: true, message }), [])
 
