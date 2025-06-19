@@ -11,7 +11,7 @@ interface ImageProcessingRequest {
   base64Image: string
 }
 
-const AI_MODEL = 'gemini-2.5-pro-preview-05-06'
+const AI_MODEL = 'gemini-2.5-pro'
 
 const AI_PROMPT = `Extract text representing items in a list from the image, following these guidelines:
 0. First, analyze the overall image content to understand its context. Use this understanding to help interpret the list structure in the following steps.
