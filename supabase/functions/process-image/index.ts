@@ -14,26 +14,28 @@ interface ImageProcessingRequest {
 const AI_MODEL = 'gemini-2.5-pro'
 
 const AI_PROMPT = `Extract text representing items in a list from the image, following these guidelines:
-0. First, analyze the overall image content to understand its context. Use this understanding to help interpret the list structure in the following steps.
-1. Identify potential list items: Look for text lines arranged with consistent visual alignment (e.g., vertical stacking, similar starting positions, shared indentation). Consider each such line as a potential distinct list item initially.
-2. Treat each potential item line (from step 1) as separate by default. Combine a line with the preceding one ONLY if:
-   a) It is clearly indented relative to the preceding line, OR
+1. First, analyze the overall image content to understand its context. Use this understanding to help interpret the list structure in the following steps. CRITICAL: Look for repeating patterns where a visually prominent element (bold, larger, or differently formatted) is followed by subordinate descriptive text. These form single logical units and must be combined into one list item.
+2. Identify potential list items: Look for text lines arranged with consistent visual alignment (e.g., vertical stacking, similar starting positions, shared indentation). When analyzing structure, consider dot leaders (sequences of dots like "......" or "• • •" that visually connect text) as indicators of list formatting, but these should not appear in the final extracted text. CRUCIAL: Identify visual hierarchy cues such as font size, weight (bold vs regular), color, and formatting differences. When you see a repeating pattern where prominent text is followed by subordinate text, treat each primary-plus-subordinate group as ONE complete list item.
+3. Before determining final list items, analyze the repeating structure: If multiple sections follow the pattern of [Primary Text] followed immediately by [Subordinate Text], this indicates each primary element and ALL its subordinate content should be merged into a single list item. Examples of primary elements: bold headings, larger text, capitalized labels. Examples of subordinate elements: regular weight text, smaller font, descriptive details, italicized text positioned directly below the primary element.
+4. Combine lines into single list items when:
+   a) A line is clearly indented relative to the preceding line, OR
    b) It is unambiguously part of a single wrapped sentence, OR
-   c) It is NOT indented but its content and close proximity clearly suggest it is a subordinate description/detail for the item on the preceding line, AND the preceding line appears to be the primary item name/title.
-   Do NOT combine distinct, self-contained items (like names in a simple list) that are merely stacked vertically, even if aligned or within the same visual block.
-3. Each distinct list item identified should be a separate entry in the array.
-4. Preserve the original order of the list items.
-5. Include all text segments that maintain the identified visual alignment (ignore color differences) and are legible, regardless of content differences (e.g., capitalization, text vs. numbers), unless explicitly excluded by the rules below.
-6. Exclude text only if it is:
+   c) The line uses subordinate visual formatting (lighter weight, smaller size, different style) and appears directly below a primary element (bold, larger, or prominent) that serves as a label or heading. ALL such subordinate content should be appended to the primary element to form one complete list item.
+   Do NOT treat visually subordinate descriptive text as a separate item when it appears directly beneath a primary label.
+5. Each distinct list item identified should be a separate entry in the array.
+6. Preserve the original order of the list items.
+7. Include all text segments that maintain the identified visual alignment (ignore color differences) and are legible, regardless of content differences (e.g., capitalization, text vs. numbers), unless explicitly excluded by the rules below.
+8. Exclude text only if it is:
    - Positioned or formatted in a way that *clearly breaks* the main visual flow or alignment of the list (e.g., a distinct title or subheading set significantly apart or formatted differently, a paragraph elsewhere).
    - Part of legends, keys, footnotes, or disclaimers explaining symbols or terms, even if visually arranged in a list-like manner.
    - Significantly obscured or too blurry to read reliably.
    - Purely decorative or formatting symbols (e.g., bullet points, horizontal lines).
-7. Clean up the extracted text for each item by:
+9. Clean up the extracted text for each item by:
    - Trimming leading/trailing whitespace.
    - Joining multi-line text belonging to the same item with a single space.
    - Correcting obvious typographical errors if possible without changing the meaning.
-8. If no text forming a list structure is found, return an empty array.
+   - Removing dot leaders (sequences of dots, periods, or similar characters used as visual guides, such as "........" or "• • •") that appear between text elements.
+10. If no text forming a list structure is found, return an empty array.
 
 Return your response as an array where each element is an object with a "text" property containing the extracted list item.`
 
