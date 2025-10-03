@@ -98,7 +98,11 @@ serve(async (req: Request): Promise<Response> => {
 
             if (!candidate) continue
 
-            for (const part of candidate.content.parts) {
+            const parts = candidate.content?.parts
+
+            if (!parts || !Array.isArray(parts)) continue // Parts may not be iterable (undefined, null, or non-array).
+
+            for (const part of parts) {
               if (!part.text) continue
 
               const eventData = { thought: part.thought || false, text: part.text }
