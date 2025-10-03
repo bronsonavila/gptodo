@@ -26,7 +26,8 @@ const AI_PROMPT = `Extract text representing items in a list from the image, fol
 6. Preserve the original order of the list items.
 7. Include all text segments that maintain the identified visual alignment (ignore color differences) and are legible, regardless of content differences (e.g., capitalization, text vs. numbers), unless explicitly excluded by the rules below.
 8. Exclude text only if it is:
-   - Positioned or formatted in a way that *clearly breaks* the main visual flow or alignment of the list (e.g., a distinct title or subheading set significantly apart or formatted differently, a paragraph elsewhere).
+   - A section header, category label, or organizational heading (often all caps, centered, or with distinct spacing/formatting) that groups items but is not itself an actionable item. These serve to organize the list but should not be extracted as separate list items.
+   - Positioned or formatted in a way that *clearly breaks* the main visual flow or alignment of the list (e.g., a distinct title set significantly apart or formatted differently, a paragraph elsewhere).
    - Part of legends, keys, footnotes, or disclaimers explaining symbols or terms, even if visually arranged in a list-like manner.
    - Significantly obscured or too blurry to read reliably.
    - Purely decorative or formatting symbols (e.g., bullet points, horizontal lines).
