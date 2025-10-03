@@ -1,7 +1,7 @@
 // @ts-ignore
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 // @ts-ignore
-import { GoogleGenerativeAI, SchemaType } from 'npm:@google/generative-ai@0.24.0'
+import { GoogleGenAI } from 'npm:@google/genai@1.3.0'
 
 interface ErrorResponse {
   error: string
@@ -21,7 +21,7 @@ const AI_PROMPT = `Extract text representing items in a list from the image, fol
    b) It is unambiguously part of a single wrapped sentence, OR
    c) It is NOT indented but its content and close proximity clearly suggest it is a subordinate description/detail for the item on the preceding line, AND the preceding line appears to be the primary item name/title.
    Do NOT combine distinct, self-contained items (like names in a simple list) that are merely stacked vertically, even if aligned or within the same visual block.
-3. Each distinct list item identified should be a separate entry in the JSON array.
+3. Each distinct list item identified should be a separate entry in the array.
 4. Preserve the original order of the list items.
 5. Include all text segments that maintain the identified visual alignment (ignore color differences) and are legible, regardless of content differences (e.g., capitalization, text vs. numbers), unless explicitly excluded by the rules below.
 6. Exclude text only if it is:
@@ -33,15 +33,15 @@ const AI_PROMPT = `Extract text representing items in a list from the image, fol
    - Trimming leading/trailing whitespace.
    - Joining multi-line text belonging to the same item with a single space.
    - Correcting obvious typographical errors if possible without changing the meaning.
-8. If no text forming a list structure is found, return an empty array.`
+8. If no text forming a list structure is found, return an empty array.
+
+Return your response as an array where each element is an object with a "text" property containing the extracted list item.`
 
 const AI_SCHEMA = {
-  type: SchemaType.ARRAY,
+  type: 'ARRAY',
   items: {
-    type: SchemaType.OBJECT,
-    properties: {
-      text: { type: SchemaType.STRING, description: 'A section of text extracted from the image' }
-    },
+    type: 'OBJECT',
+    properties: { text: { type: 'STRING', description: 'A section of text extracted from the image' } },
     required: ['text']
   }
 }
@@ -70,25 +70,64 @@ serve(async (req: Request): Promise<Response> => {
     if (!base64Image) throw new Error('No image provided')
 
     // @ts-ignore
-    const genAI = new GoogleGenerativeAI(Deno.env.get('GEMINI_API_KEY') || '')
+    const ai = new GoogleGenAI({ apiKey: Deno.env.get('GEMINI_API_KEY') || '' })
 
-    const model = genAI.getGenerativeModel({
-      model: AI_MODEL,
-      generationConfig: { responseMimeType: 'application/json', responseSchema: AI_SCHEMA, temperature: 0 }
+    const encoder = new TextEncoder()
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        try {
+          const response = await ai.models.generateContentStream({
+            model: AI_MODEL,
+            contents: [
+              {
+                role: 'user',
+                parts: [{ inlineData: { data: base64Image, mimeType: 'image/jpeg' } }, { text: AI_PROMPT }]
+              }
+            ],
+            config: {
+              responseMimeType: 'application/json',
+              responseSchema: AI_SCHEMA,
+              temperature: 0,
+              thinkingConfig: { includeThoughts: true }
+            }
+          })
+
+          for await (const chunk of response) {
+            const candidate = chunk.candidates?.[0]
+
+            if (!candidate) continue
+
+            for (const part of candidate.content.parts) {
+              if (!part.text) continue
+
+              const eventData = { thought: part.thought || false, text: part.text }
+
+              const sseMessage = `data: ${JSON.stringify(eventData)}\n\n`
+
+              controller.enqueue(encoder.encode(sseMessage))
+            }
+          }
+
+          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+          controller.close()
+        } catch (error) {
+          const errorData = { error: error.message }
+
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`))
+          controller.close()
+        }
+      }
     })
 
-    const { response } = await model.generateContent([
-      { inlineData: { data: base64Image, mimeType: 'image/jpeg' } },
-      AI_PROMPT
-    ])
-
-    const jsonResponse = JSON.parse(response.text())
-
-    const textList: string[] = Array.isArray(jsonResponse)
-      ? jsonResponse.map(item => item.text).filter(text => typeof text === 'string')
-      : []
-
-    return new Response(JSON.stringify(textList), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
+    return new Response(stream, {
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive'
+      }
+    })
   } catch (error) {
     const errorResponse: ErrorResponse = { error: error.message }
 

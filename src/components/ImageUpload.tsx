@@ -2,6 +2,7 @@ import { Box, Paper, Typography } from '@mui/material'
 import { ClearButton } from './ClearButton'
 import { Loader } from './Loader'
 import { motion } from 'framer-motion'
+import { ThoughtsDisplay } from './ThoughtsDisplay'
 import { UploadButton, ALLOWED_FILE_TYPES } from './UploadButton'
 import { useAppContext } from '../context/AppContext'
 import { useRef, useCallback } from 'react'
@@ -11,8 +12,15 @@ import PhotoCameraIcon from '@mui/icons-material/PhotoCamera'
 const MAX_FILE_SIZE_IN_MB = 10
 
 export const ImageUpload = () => {
-  const { isLoading, selectedImage, supportsCaptureAttribute, handleClear, handleError, processSelectedFile } =
-    useAppContext()
+  const {
+    isLoading,
+    selectedImage,
+    supportsCaptureAttribute,
+    thoughts,
+    handleClear,
+    handleError,
+    processSelectedFile
+  } = useAppContext()
 
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -62,9 +70,15 @@ export const ImageUpload = () => {
         </Typography>
       )}
 
-      <Box sx={{ alignItems: 'center', display: 'flex', justifyContent: 'center', minHeight: '44px', width: '100%' }}>
+      <Box sx={{ alignContent: 'center', justifyItems: 'center', position: 'relative', width: '100%' }}>
         {isLoading ? (
-          <Loader />
+          <>
+            <Loader />
+
+            <Box sx={{ left: 0, position: 'absolute', right: 0, top: '60px' }}>
+              <ThoughtsDisplay isLoading={isLoading} thoughts={thoughts} />
+            </Box>
+          </>
         ) : (
           <motion.div
             animate={{ opacity: 1, y: 0 }}

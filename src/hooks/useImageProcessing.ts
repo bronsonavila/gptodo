@@ -1,4 +1,4 @@
-import { processTodoImage } from '../services/api'
+import { processTodoImage, StreamCallbacks } from '../services/api'
 import { useState, useCallback } from 'react'
 import type { TodoItem } from '../types'
 
@@ -7,11 +7,11 @@ export const useImageProcessing = (onProcessSuccess: (todos: TodoItem[]) => void
 
   const clearProcessingError = useCallback(() => setError(null), [])
 
-  const processImage = async (base64Image: string) => {
+  const processImage = async (base64Image: string, callbacks?: StreamCallbacks) => {
     setError(null)
 
     try {
-      const data = await processTodoImage(base64Image)
+      const data = await processTodoImage(base64Image, callbacks)
 
       onProcessSuccess(data)
 

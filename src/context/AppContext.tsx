@@ -15,6 +15,7 @@ interface AppContextType {
   processingError: string | null
   selectedImage: string | null
   supportsCaptureAttribute: boolean
+  thoughts: ThoughtItem[]
   todos: TodoItem[]
 
   // Handlers
@@ -26,6 +27,11 @@ interface AppContextType {
   processSelectedFile: (file: File) => Promise<void>
 }
 
+export interface ThoughtItem {
+  heading: string
+  body: string
+}
+
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
@@ -33,6 +39,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [hasCacheBeenChecked, setHasCacheBeenChecked] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
+  const [thoughts, setThoughts] = useState<ThoughtItem[]>([])
 
   const { isSortedAlphabetically, todos, clearTodos, handleToggleSort, handleToggleTodo, resetSort, updateTodos } =
     useTodoList()
@@ -76,6 +83,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       clearTodos()
       setSelectedImage(null)
       setError({ show: false, message: '' })
+      setThoughts([])
     } catch (error) {
       console.error('Error clearing data:', error)
 
@@ -90,6 +98,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(true)
       setSelectedImage(null)
       setError({ show: false, message: '' })
+      setThoughts([])
 
       const reader = new FileReader()
 
@@ -102,7 +111,22 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
           if (!base64Image) throw new Error('Failed to process the image data.')
 
           await cacheService.cacheImage(imageData)
-          await processImage(base64Image)
+
+          await processImage(base64Image, {
+            onThought: (thought: string) => {
+              const boldMatch = thought.match(/\*\*(.*?)\*\*/) // Extract bold text (text between **...**) as heading.
+
+              if (boldMatch && boldMatch.length > 1) {
+                const heading = boldMatch[1]
+                const body = thought.replace(/\*\*.*?\*\*/, '').trim() // Remove heading to get the body.
+
+                setThoughts(previous => [...previous, { heading, body }])
+              }
+            },
+            onAnswer: () => {
+              // Answer chunks are handled internally by the API.
+            }
+          })
 
           setSelectedImage(imageData)
         } catch (error) {
@@ -143,6 +167,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     processingError,
     selectedImage,
     supportsCaptureAttribute,
+    thoughts,
     todos,
     clearError,
     handleClear,
