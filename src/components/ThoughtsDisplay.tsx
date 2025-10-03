@@ -24,7 +24,7 @@ export const ThoughtsDisplay = ({ thoughts, isLoading }: ThoughtsDisplayProps) =
       >
         <Typography
           align="center"
-          sx={{ color: 'text.secondary', fontSize: '0.813rem', fontStyle: 'italic', opacity: 0.7 }}
+          sx={{ color: 'text.secondary', fontSize: '0.875rem', fontStyle: 'italic', opacity: 0.7 }}
         >
           {displayText}
         </Typography>
