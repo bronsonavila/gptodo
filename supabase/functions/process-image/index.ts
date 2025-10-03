@@ -89,7 +89,10 @@ serve(async (req: Request): Promise<Response> => {
               responseMimeType: 'application/json',
               responseSchema: AI_SCHEMA,
               temperature: 0,
-              thinkingConfig: { includeThoughts: true }
+              thinkingConfig: {
+                includeThoughts: true,
+                thinkingBudget: 1024
+              }
             }
           })
 
