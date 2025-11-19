@@ -1,7 +1,7 @@
 // @ts-ignore
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 // @ts-ignore
-import { GoogleGenAI } from 'npm:@google/genai@1.30.0'
+import { GoogleGenAI, MediaResolution } from 'npm:@google/genai@1.30.0'
 
 interface ErrorResponse {
   error: string
@@ -91,7 +91,7 @@ serve(async (req: Request): Promise<Response> => {
             config: {
               responseMimeType: 'application/json',
               responseSchema: AI_SCHEMA,
-              temperature: 0,
+              mediaResolution: MediaResolution.MEDIA_RESOLUTION_HIGH,
               thinkingConfig: {
                 includeThoughts: true
               }
