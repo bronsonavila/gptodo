@@ -1,7 +1,7 @@
 // @ts-ignore
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 // @ts-ignore
-import { GoogleGenAI } from 'npm:@google/genai@1.3.0'
+import { GoogleGenAI } from 'npm:@google/genai@1.30.0'
 
 interface ErrorResponse {
   error: string
@@ -11,7 +11,7 @@ interface ImageProcessingRequest {
   base64Image: string
 }
 
-const AI_MODEL = 'gemini-2.5-pro'
+const AI_MODEL = 'gemini-3-pro-preview'
 
 const AI_PROMPT = `Extract text representing items in a list from the image, following these guidelines:
 1. First, analyze the overall image content to understand its context. Use this understanding to help interpret the list structure in the following steps. CRITICAL: Look for repeating patterns where a visually prominent element (bold, larger, or differently formatted) is followed by subordinate descriptive text. These form single logical units and must be combined into one list item.
@@ -93,16 +93,22 @@ serve(async (req: Request): Promise<Response> => {
               responseSchema: AI_SCHEMA,
               temperature: 0,
               thinkingConfig: {
-                includeThoughts: true,
-                thinkingBudget: 1024
+                includeThoughts: true
               }
             }
           })
+
+          let hasSentAnswer = false
+          let lastFinishReason: string | null = null
 
           for await (const chunk of response) {
             const candidate = chunk.candidates?.[0]
 
             if (!candidate) continue
+
+            if (candidate.finishReason) {
+              lastFinishReason = candidate.finishReason
+            }
 
             const parts = candidate.content?.parts
 
@@ -111,7 +117,10 @@ serve(async (req: Request): Promise<Response> => {
             for (const part of parts) {
               if (!part.text) continue
 
-              const eventData = { thought: part.thought || false, text: part.text }
+              const isThought = part.thought || false
+              if (!isThought) hasSentAnswer = true
+
+              const eventData = { thought: isThought, text: part.text }
 
               const sseMessage = `data: ${JSON.stringify(eventData)}\n\n`
 
@@ -119,7 +128,19 @@ serve(async (req: Request): Promise<Response> => {
             }
           }
 
-          controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+          if (!hasSentAnswer) {
+            const reason = lastFinishReason || 'Unknown'
+            const errorMessage =
+              reason === 'SAFETY'
+                ? 'The AI model blocked the request due to safety filters.'
+                : `AI model stopped without generating an answer. Reason: ${reason}`
+
+            const errorData = { error: errorMessage }
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify(errorData)}\n\n`))
+          } else {
+            controller.enqueue(encoder.encode('data: [DONE]\n\n'))
+          }
+
           controller.close()
         } catch (error) {
           const errorData = { error: error.message }
