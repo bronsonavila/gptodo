@@ -11,7 +11,7 @@ interface ImageProcessingRequest {
   base64Image: string
 }
 
-const AI_MODEL = 'gemini-3-pro-preview'
+const AI_MODEL = 'gemini-3-flash-preview'
 
 const AI_PROMPT = `Extract text representing items in a list from the image, following these guidelines:
 1. First, analyze the overall image content to understand its context. Use this understanding to help interpret the list structure in the following steps. CRITICAL: Look for repeating patterns where a visually prominent element (bold, larger, or differently formatted) is followed by subordinate descriptive text. These form single logical units and must be combined into one list item.
